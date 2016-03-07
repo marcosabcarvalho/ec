@@ -72,12 +72,15 @@ void setup (void)
   Serial.println(sqrt64(2.0));
   d1=atof64("-12.34__56_7_89");
   Serial.println(d1);
-  Serial.println(atof64("5.7e4"));
-  Serial.println(atof64("-5.7e4"));
-  Serial.println(atof64("5.7e-4"));
-  Serial.println(atof64("5.7e48"));
-  Serial.println(atof64("5.7e-48"));
-  Serial.println(atof64("570___0_e4"));
+  Serial.println(atof64("1"));
+  Serial.println(atof64("2"));
+  Serial.println(atof64("4"));
+  Serial.println(atof64("151"));
+  Serial.println(atof64("152"));
+  Serial.println(atof64("153"));
+  Serial.println(atof64("1e42"));
+  d1 = f64(0x48A6F578, 0xC4E0A060);
+  Serial.println(d1);
 } // end of setup
 
 void loop(void)
