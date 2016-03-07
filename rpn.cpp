@@ -29,35 +29,33 @@ void rpn::key_input(char key)
   }
 }
 
+static void cdel(char *buf)
+{
+  for(;*buf;buf++)
+    *(buf)=*(buf+1);
+}
+
+static void cins(char *buf, char c)
+{
+  for(;c;buf++){
+    c^=*buf;
+    *buf^=c;
+    c^=*buf;
+  }
+  *buf='\0';
+}
+
 static void set_exp_sign(char *buf, bool neg)
 {
   int8_t n = 0;
-  char cha, chb;
   
   while(buf[n] && buf[n]!='e')n++; // string MUST contain an 'e' 
   if(!buf[n])return;
   n++;
   if(neg && buf[n]=='-')return;
   if(!neg && buf[n]!='-')return;
-  if(!neg){ //delete '-'
-    while(buf[n]){
-      buf[n]=buf[n+1];
-      n++;
-    }
-  }
-  else{
-    cha=buf[n];
-    buf[n]='-'; //insert '-'
-    n++;
-    while(buf[n]){
-      chb=buf[n];
-      buf[n]=cha;
-      cha=chb;
-      n++;
-    }
-    buf[n++]=cha;
-    buf[n]=0;
-  }
+  if(!neg)cdel(&buf[n]); //delete '-'    
+  else cins(&buf[n],'-'); //insert '-'
 }
 
 void rpn::key_edit(char key)
@@ -71,8 +69,7 @@ void rpn::key_edit(char key)
     altFn = alt_Edit;
     edln[0]='-'; //it is easier to insert the sign first and remove it later
     for(int8_t i=1;i<18;i++)edln[i]=0;
-    PrDev->displayline(0);
-    PrDev->clearline(0);
+    PrDev->lcdclear(0);
     edpos=1;
     point=neg=false;
     exv=0;
@@ -88,7 +85,7 @@ void rpn::key_edit(char key)
       edln[edpos++]=key;
       PrDev->print(key);
       break;
-    case '-':
+    case 's': //sign
       if(ex){
         sexp^=1;
         set_exp_sign(edln+expos,sexp);
@@ -97,8 +94,7 @@ void rpn::key_edit(char key)
       else{
         neg^=1; //toggle sign
       }
-      PrDev->displayline(0);
-      PrDev->clearline(0);
+      PrDev->lcdclear(0);
       PrDev->print(&edln[!neg]);
       break;
     case '.':
@@ -134,13 +130,11 @@ void rpn::key_edit(char key)
       edln[edpos]='\0';
       if(edpos<2){ //exit edit mode
         altFn=alt_Norm;
-        PrDev->displayline(0);
-        PrDev->print(stack[0]);
+        PrDev->lcdprint(stack[0].toString());
       }
       else{
-        PrDev->displayline(0);
-        PrDev->clearline(0);
-        PrDev->print(&edln[!neg]);
+        PrDev->lcdclear(0);
+        PrDev->lcdprint(&edln[!neg]);
       }
       break;
     case '\n':
@@ -161,14 +155,26 @@ void rpn::key_edit(char key)
 void rpn::key_norm(char key)
 {
   switch(key){
-    case '-':
+    case 's'://sign
     case '.':
     case '0' ... '9':
-      PrDev->clear();
-      PrDev->print(stack[0]);
       stack_push();
+      PrDev->lcdprint(stack[1].toString(),1);
+      PrDev->lcdclear(0);
       key_edit(key);
       break;
+    case '+':
+      stack[0]+=stack_pull();
+      goto showstack;
+    case '-':
+      stack[0]-=stack_pull();
+      goto showstack;
+    case '*':
+      stack[0]*=stack_pull();
+      goto showstack;
+    case '/':
+      stack[0]/=stack_pull();
+      goto showstack;
     case 'a':
     case 'b':
     case 'c':
@@ -193,10 +199,9 @@ void rpn::key_norm(char key)
     case '\r':
     case '\n':
       stack_push();
-      PrDev->displayline(1);
-      PrDev->println(stack[1]);
-      PrDev->displayline(0);
-      PrDev->println(stack[0]);
+showstack:
+      PrDev->lcdprint(stack[1].toString(),1);
+      PrDev->lcdprint(stack[0].toString());
       break;
 
     default:
@@ -207,8 +212,18 @@ void rpn::key_norm(char key)
 
 void rpn::stack_push(void)
 {
-  for(int8_t i=STACK_DEPTH-1;i>0;i--){
+  for(int8_t i=STACK_TOP;i>0;i--){
     stack[i] = stack[i-1];
   }
+}
+
+f64 rpn::stack_pull(void)
+{
+  f64 result = stack[0];
+  for(int8_t i=0;i<STACK_TOP;i++){
+    stack[i] = stack[i+1];
+  }
+  stack[STACK_TOP]=0;
+  return result;
 }
 

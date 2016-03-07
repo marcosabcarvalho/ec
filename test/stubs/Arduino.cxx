@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
   printf("Press 'q' to quit\n");
   for(;;){
     loop();
-    if(ch_=='\n')putchar('\n');
+    //if(ch_=='\n')putchar('\n');
     if(ch_=='q')break;
   }
 

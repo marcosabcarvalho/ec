@@ -7,8 +7,8 @@ class LiquidCrystal : public Print
   public:
     LiquidCrystal(int,int,int,int,int,int){}
     void begin(int,int){}
-    void clear(void){printf("\n                    \r");}
-    void setCursor(int,int){printf("\r");}
+    void clear(void){printf("\r\n");}
+    void setCursor(int,int){printf("\r\n");}
 };
 
 #endif

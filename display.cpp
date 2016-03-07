@@ -1,6 +1,6 @@
 #include "display.h"
 
-/* simple wrapper class to handle line-feed on the LCD */
+/* simple wrapper class to handle LCD lines */
 
 display::display(void) : LiquidCrystal(8,9,4,5,6,7)
 {
@@ -17,38 +17,22 @@ void display::init(void)
   LiquidCrystal::begin(16,2);
 }
 
-void display::println(const char *str)
+void display::lcdprint(const char *str)
 {
+  lcdprint(str,false);
+}
+
+void display::lcdprint(const char *str, bool topline)
+{
+  lcdclear(topline);
   print(str);
-  setCursor(1,1);
 }
 
-void display::println(char ch)
+void display::lcdclear(bool topline)
 {
-  print(ch);
-  setCursor(1,1);
-}
-
-void display::println(const Printable& p)
-{
-  print(p);
-  setCursor(1,1);
-}
-
-void display::displayline(int n)
-{
-  if(n){
-    setCursor(1,0);
-    clearline(1);
-  }
-  else setCursor(1,1);
-}
-
-/* 0 is the bottom line */
-void display::clearline(int n)
-{
-  println("               ");
-  setCursor(1,!n);
+  setCursor(LCD_LEFT,!topline);
+  print("                ");
+  setCursor(LCD_LEFT,!topline);
 }
 
 

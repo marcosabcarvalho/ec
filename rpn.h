@@ -2,6 +2,8 @@
 #include "display.h"
 
 #define STACK_DEPTH 4
+#define STACK_TOP (STACK_DEPTH-1)
+
 typedef enum {alt_Norm, alt_Edit, alt_Shift, alt_Alpha, alt_Hyp} altFn_t;
 
 class rpn
@@ -19,6 +21,8 @@ class rpn
   void key_norm(char key);
   void key_edit(char key);
   void stack_push(void);
+  f64 stack_pull(void);
+
 };
 
 
