@@ -1,18 +1,16 @@
 #include "rpn.h"
 
-#define stackx stack[0]
-#define stacky stack[1]
-
 rpn::rpn(void)
 {
   altFn = alt_Norm;
+  lastx=0;
+  push_en=true;
 }
 
 
 void rpn::begin(display &dev)
 {
   PrDev=&dev;
-  push_en=true;
 }
 
 void rpn::key_input(char key)
@@ -25,141 +23,12 @@ void rpn::key_input(char key)
       key_edit(key);
       break;  
     case alt_Shift:
+      key_shift(key);
       break;
     case alt_Alpha:
       break;
     case alt_Hyp:
       break;
-  }
-}
-
-static void cdel(char *buf)
-{
-  for(;*buf;buf++)
-    *(buf)=*(buf+1);
-}
-
-static void cins(char *buf, char c)
-{
-  for(;c;buf++){
-    c^=*buf;
-    *buf^=c;
-    c^=*buf;
-  }
-  *buf='\0';
-}
-
-static void set_exp_sign(char *buf, bool neg)
-{
-  int8_t n = 0;
-  
-  while(buf[n] && buf[n]!='e')n++; // string MUST contain an 'e' 
-  if(!buf[n])return;
-  n++;
-  if(neg && buf[n]=='-')return;
-  if(!neg && buf[n]!='-')return;
-  if(!neg)cdel(&buf[n]); //delete '-'    
-  else cins(&buf[n],'-'); //insert '-'
-}
-
-void rpn::key_edit(char key)
-{
-  static char edln[18];
-  static int8_t edpos=0,expos=0;
-  static bool neg,point,ex, sexp=0;
-  static int16_t exv=0;
-
-  if(altFn != alt_Edit){
-    altFn = alt_Edit;
-    edln[0]='-'; //it is easier to insert the sign first and remove it later
-    for(int8_t i=1;i<18;i++)edln[i]=0;
-    PrDev->lcdclear(0);
-    edpos=1;
-    point=neg=false;
-    exv=0;
-    sexp=ex=false;
-  }
-  switch(key){
-    case '0' ... '9':
-      if(ex){
-        if(exv*10+(key-'0')>=307)break;
-        exv*=10;
-        exv+=key-'0';
-      }
-      edln[edpos++]=key;
-      PrDev->print(key);
-      break;
-    case ',': //sign
-      if(ex){
-        sexp^=1;
-        set_exp_sign(edln+expos,sexp);
-        edpos+=sexp?1:-1;
-      }
-      else{
-        neg^=1; //toggle sign
-      }
-      PrDev->lcdclear(0);
-      PrDev->print(&edln[!neg]);
-      break;
-    case '.':
-      if(!point){
-        if(edpos<2){
-          PrDev->print('0');
-          edln[edpos++]='0';
-        }
-        edln[edpos++]=key;
-        PrDev->print(key);
-      }
-      point=true;
-      break;
-    case 'q':
-      if(!ex){
-        if(edpos==1){ /* eex cannot be first */
-          PrDev->print('1');
-          edln[edpos++]='1';
-        }
-        expos=edpos;
-        edln[edpos++]='e';
-        PrDev->print('e');
-      }
-      ex=true;
-      exv=0;
-      sexp=false;
-      break;
-    case '\177': //pc raw backspace
-    case '\010': //backspace
-    case 'r':
-      edpos--;
-      if(edln[edpos]=='.')point=false;
-      if(edln[edpos]=='e'){
-        ex=false;
-      }
-      if(ex && edln[edpos]=='-')sexp=false;
-      exv=exv/10;
-      edln[edpos]='\0';
-      if(edpos<2){ //exit edit mode
-        altFn=alt_Norm;
-        PrDev->lcdprint(stackx.toString());
-      }
-      else{
-        PrDev->lcdclear(0);
-        PrDev->lcdprint(&edln[!neg]);
-      }
-      break;
-    case '\n':
-    case '\r':
-      altFn=alt_Norm;
-      edln[edpos]='\0';
-      stackx = strtof64(&edln[!neg], NULL);
-      push_en=false;
-      key_norm(key);
-      return;
-      break;
-    default:
-      altFn=alt_Norm;
-      edln[edpos]='\0';
-      stackx = strtof64(&edln[!neg], NULL);
-      key_norm(key);
   }
 }
 
@@ -187,18 +56,22 @@ void rpn::key_norm(char key)
       stackx/=stack_pull();
       break;
     case 'a':
+      lastx=stackx;
       stackx=f64(1)/stackx;
       break;
     case 'b':
+      lastx=stackx;
       stackx=sqrt64(stackx);
       break;
     case 'c':
       stackx=exp64(stack_pull() * log64(stacky));
       break;
     case 'd':
+      lastx=stackx;
       stackx=log64(stackx);
       break;
     case 'e':
+      lastx=stackx;
       stackx=log64(stackx)/log64(10);
       break;
     case 'f':
@@ -208,28 +81,38 @@ void rpn::key_norm(char key)
       stack_pull();
       break;
     case 'h':
+      lastx=stackx;
       stackx=sin64(stackx);
       break;
     case 'i':
+      lastx=stackx;
       stackx=cos64(stackx);
       break;
     case 'j':
+      lastx=stackx;
       stackx=tan64(stackx);
       break;
     case 'k':
     case 'l':
     case 'm':
-    case 'n':
-    case 'o':
+    case ';':
+    case '\'':
       break;
     case 'p':
       stackx=-stackx;
       break;
     case '\177': //pc raw backspace
     case '\010': //backspace
-    case 'r':
+    case '\\':
       stackx = 0;
       push_en=false;
+      break;
+    case 'A':
+      altFn = alt_Shift;
+      return;
+    case 'B':
+    case 'C':
+    case 'D':
       break;
     case '\r':
     case '\n':
@@ -240,12 +123,131 @@ void rpn::key_norm(char key)
       PrDev->print((int)key);
       break;
   }
+  show_stack();
+}
 
-	PrDev->lcdprint(stacky.toString(),1);
-	PrDev->lcdprint(stackx.toString());
-	Serial.println();
-	Serial.println("----------------");
-	for(int i=STACK_TOP;i>=0;i--)Serial.println(stack[i]);
+void rpn::key_shift(char key)
+{
+  switch(key){
+    case 'A': //unshift
+      altFn = alt_Norm;
+      return;
+    case 'a':
+      stack_push();
+      stackx = lastx;
+      break;
+    case 'b':
+      lastx=stackx;
+      stackx = stackx*stackx;
+      break;
+    case 'c':
+      stackx = exp64((f64(1)/stack_pull()) * log64(stacky));
+      break;
+    case 'd':
+      lastx=stackx;
+      stackx=exp64(stackx);
+      break;
+    case 'e':
+      lastx=stackx;
+      stackx=stack_pull()*log64(10);
+      break;
+    case 'f':
+      stack_push();
+      stackx=pi;
+    case 'g':
+      //hyp
+      break;
+    case 'h':
+      lastx=stackx;
+      stackx=asin64(stackx);
+      break;
+    case 'i':
+      lastx=stackx;
+      stackx=acos64(stackx);
+      break;
+    case 'j':
+      lastx=stackx;
+      stackx=atan64(stackx);
+      break;
+#if 0
+    case 'k':
+    case 'l':
+    case 'm':
+    case 'n':
+    case 'o':
+      break;
+    case 'p':
+      lastx=stackx;
+      stackx=stackx.fabs();
+      break;
+    case 'q':
+      lastx=stackx;
+      stackx=stackx.intval();
+      break;
+    case '7':
+      lastx=stackx;
+      stackx=stackx==0;
+      break;
+    case '8':
+      lastx=stackx;
+      stackx=stackx==stack_pull();
+      break;
+    case '9':
+      lastx=stackx;
+      stackx=stackx!=stack_pull();
+      break;
+    case '/':
+      lastx=stackx;
+      stackx%=stack_pull();
+      break;
+    case '4':
+      lastx=stackx;
+      //->R
+      break;
+    case '5':
+      lastx=stackx;
+      //->P
+      break;
+    case '6':
+      //random
+      break;
+    case '*':
+      lastx=stackx;
+      stackx=stackx<stack_pull();
+      break;
+    case '1':
+      lastx=stackx;
+      //->HMS
+      break;
+    case '2':
+      lastx=stackx;
+      //HMS->
+      break;
+    case '3':
+      //seed
+      break;
+    case '-':
+      lastx=stackx;
+      stackx=stackx>stack_pull();
+      break;
+    case 'B':
+      Serial.print(stackx.bits(1),16);
+      Serial.println(stackx.bits(0),16);
+      Serial.println();
+      break;
+#endif
+  }
+  altFn = alt_Norm;
+  show_stack();
+}
+
+void rpn::show_stack(void)
+{
+  PrDev->lcdprint(stacky.toString(),1);
+  PrDev->lcdprint(stackx.toString());
+  Serial.println();
+  Serial.println("----------------");
+  for(int i=STACK_TOP;i>=0;i--)Serial.println(stack[i]);
 }
 
 void rpn::stack_push(void)
@@ -260,12 +262,12 @@ void rpn::stack_push(void)
 
 f64 rpn::stack_pull(void)
 {
-  f64 result = stack[0];
+  lastx = stack[0];
   for(int8_t i=0;i<STACK_TOP;i++){
     stack[i] = stack[i+1];
   }
   stack[STACK_TOP]=0;
-  return result;
+  return lastx;
 }
 
 void rpn::stack_swapxy(void)
