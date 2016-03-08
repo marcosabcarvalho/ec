@@ -178,14 +178,12 @@ void rpn::key_norm(char key)
       stackx+=stack_pull();
       break;
     case '-':
-      stack_swapxy();
       stackx-=stack_pull();
       break;
     case '*':
       stackx*=stack_pull();
       break;
     case '/':
-      stack_swapxy();
       stackx/=stack_pull();
       break;
     case 'a':
@@ -195,7 +193,7 @@ void rpn::key_norm(char key)
       stackx=sqrt64(stackx);
       break;
     case 'c':
-      stackx=exp64(stackx*log64(stack_pull()));
+      stackx=exp64(stack_pull() * log64(stacky));
       break;
     case 'd':
       stackx=log64(stackx);
@@ -262,8 +260,8 @@ void rpn::stack_push(void)
 
 f64 rpn::stack_pull(void)
 {
-  f64 result = stack[1];
-  for(int8_t i=1;i<STACK_TOP;i++){
+  f64 result = stack[0];
+  for(int8_t i=0;i<STACK_TOP;i++){
     stack[i] = stack[i+1];
   }
   stack[STACK_TOP]=0;
