@@ -53,34 +53,6 @@ void setup (void)
   lcd.clear();
   lcd.print("Hello world!");
 
-  d1 = atof64("1.2");
-  Serial.println(d1);
-
-  Serial.print("Math64::pi = ");
-  Serial.println(pi);
-  Serial.print("rootThree = ");
-  Serial.println(sqrt64(3.0));
-  Serial.print("sin: ");
-  Serial.println(sin64(d1));
-  Serial.print("atan: ");
-  Serial.println(atan64(0.33));
-  Serial.print("log: ");
-  Serial.println(log64(6.0));
-  Serial.print("exp: ");
-  Serial.println(exp64(5.2));
-  Serial.print("sqrt: ");
-  Serial.println(sqrt64(2.0));
-  d1=atof64("-12.34__56_7_89");
-  Serial.println(d1);
-  Serial.println(atof64("1"));
-  Serial.println(atof64("2"));
-  Serial.println(atof64("4"));
-  Serial.println(atof64("151"));
-  Serial.println(atof64("152"));
-  Serial.println(atof64("153"));
-  Serial.println(atof64("1e42"));
-  d1 = f64(0x48A6F578, 0xC4E0A060);
-  Serial.println(d1);
 } // end of setup
 
 void loop(void)

@@ -85,7 +85,7 @@ void rpn::key_edit(char key)
       edln[edpos++]=key;
       PrDev->print(key);
       break;
-    case 's': //sign
+    case ',': //sign
       if(ex){
         sexp^=1;
         set_exp_sign(edln+expos,sexp);
@@ -155,26 +155,42 @@ void rpn::key_edit(char key)
 void rpn::key_norm(char key)
 {
   switch(key){
-    case 's'://sign
+    case ','://sign
     case '.':
     case '0' ... '9':
       //stack_push();
-      PrDev->lcdprint(stack[1].toString(),1);
+      //PrDev->lcdprint(stack[1].toString(),1);
       PrDev->lcdclear(0);
       key_edit(key);
-      break;
+      return;
     case '+':
       stack[0]+=stack_pull();
-      goto showstack;
+      break;
     case '-':
-      stack[0]+=-stack_pull();
-      goto showstack;
+      stack[0]=stack_pull() - stack[0];
+      break;
     case '*':
       stack[0]*=stack_pull();
-      goto showstack;
+      break;
     case '/':
       stack[0]=stack_pull() / stack[0];
-      goto showstack;
+      break;
+    case 's':
+      stack[0]=sin64(stack[0]);
+      break;
+    case 'c':
+      stack[0]=cos64(stack[0]);
+      break;
+    case 't':
+      stack[0]=tan64(stack[0]);
+      break;
+    case 'l':
+      stack[0]=log64(stack[0]);
+      break;
+    case 'e':
+      stack[0]=exp64(stack[0]);
+      break;
+/*      
     case 'a':
     case 'b':
     case 'c':
@@ -195,6 +211,7 @@ void rpn::key_norm(char key)
     case 'r':
       PrDev->print(key);
       break;
+*/      
     case '\177': //pc raw backspace
     case '\010': //backspace
       stack[0] = 0;
@@ -202,18 +219,18 @@ void rpn::key_norm(char key)
     case '\r':
     case '\n':
       stack_push();
-showstack:
-      PrDev->lcdprint(stack[1].toString(),1);
-      PrDev->lcdprint(stack[0].toString());
-      Serial.println();
-      Serial.println("----------------");
-      for(int i=STACK_TOP;i>=0;i--)Serial.println(stack[i]);
       break;
 
     default:
       PrDev->print((int)key);
       break;
   }
+showstack:
+      PrDev->lcdprint(stack[1].toString(),1);
+      PrDev->lcdprint(stack[0].toString());
+      Serial.println();
+      Serial.println("----------------");
+      for(int i=STACK_TOP;i>=0;i--)Serial.println(stack[i]);
 }
 
 void rpn::stack_push(void)

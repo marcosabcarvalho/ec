@@ -36,6 +36,8 @@ class Print
   void println(int k){print(k);write("\n");}
   void println(unsigned k){print(k);write("\n");}
   void println(const Printable& x){print(x);write("\n");}
+  void print(int k,int){printf("%08x",k);} //assume hex
+  void println(int k,int){printf("%08x\n",k);} //assume hex
   bool available(){return true;}
   char read(void);
 };
