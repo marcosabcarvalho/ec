@@ -27,11 +27,11 @@ int main(int argc, char *argv[])
   setup();
   printf("\n---=!!!!!!=---\n");
   printf("Running loop()\n");
-  printf("Press 'q' to quit\n");
+  printf("Press 'Q' to quit\n");
   for(;;){
     loop();
     //if(ch_=='\n')putchar('\n');
-    if(ch_=='q')break;
+    if(ch_=='Q')break;
   }
 
   tcsetattr( STDIN_FILENO, TCSANOW, &oldt);

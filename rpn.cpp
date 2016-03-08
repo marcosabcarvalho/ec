@@ -1,5 +1,8 @@
 #include "rpn.h"
 
+#define stackx stack[0]
+#define stacky stack[1]
+
 rpn::rpn(void)
 {
   altFn = alt_Norm;
@@ -9,6 +12,7 @@ rpn::rpn(void)
 void rpn::begin(display &dev)
 {
   PrDev=&dev;
+  push_en=true;
 }
 
 void rpn::key_input(char key)
@@ -108,11 +112,15 @@ void rpn::key_edit(char key)
       }
       point=true;
       break;
-    case 'e':
+    case 'q':
       if(!ex){
+        if(edpos==1){ /* eex cannot be first */
+          PrDev->print('1');
+          edln[edpos++]='1';
+        }
         expos=edpos;
-        edln[edpos++]=key;
-        PrDev->print(key);
+        edln[edpos++]='e';
+        PrDev->print('e');
       }
       ex=true;
       exv=0;
@@ -120,6 +128,7 @@ void rpn::key_edit(char key)
       break;
     case '\177': //pc raw backspace
     case '\010': //backspace
+    case 'r':
       edpos--;
       if(edln[edpos]=='.')point=false;
       if(edln[edpos]=='e'){
@@ -130,7 +139,7 @@ void rpn::key_edit(char key)
       edln[edpos]='\0';
       if(edpos<2){ //exit edit mode
         altFn=alt_Norm;
-        PrDev->lcdprint(stack[0].toString());
+        PrDev->lcdprint(stackx.toString());
       }
       else{
         PrDev->lcdclear(0);
@@ -141,13 +150,15 @@ void rpn::key_edit(char key)
     case '\r':
       altFn=alt_Norm;
       edln[edpos]='\0';
-      stack[0] = strtof64(&edln[!neg], NULL);
+      stackx = strtof64(&edln[!neg], NULL);
+      push_en=false;
       key_norm(key);
+      return;
       break;
     default:
       altFn=alt_Norm;
       edln[edpos]='\0';
-      stack[0] = strtof64(&edln[!neg], NULL);
+      stackx = strtof64(&edln[!neg], NULL);
       key_norm(key);
   }
 }
@@ -155,67 +166,73 @@ void rpn::key_edit(char key)
 void rpn::key_norm(char key)
 {
   switch(key){
-    case ','://sign
+    case 'q'://exp
     case '.':
     case '0' ... '9':
-      //stack_push();
-      //PrDev->lcdprint(stack[1].toString(),1);
+      stack_push();
+      PrDev->lcdprint(stacky.toString(),1);
       PrDev->lcdclear(0);
       key_edit(key);
       return;
     case '+':
-      stack[0]+=stack_pull();
+      stackx+=stack_pull();
       break;
     case '-':
-      stack[0]=stack_pull() - stack[0];
+      stack_swapxy();
+      stackx-=stack_pull();
       break;
     case '*':
-      stack[0]*=stack_pull();
+      stackx*=stack_pull();
       break;
     case '/':
-      stack[0]=stack_pull() / stack[0];
+      stack_swapxy();
+      stackx/=stack_pull();
       break;
-    case 's':
-      stack[0]=sin64(stack[0]);
-      break;
-    case 'c':
-      stack[0]=cos64(stack[0]);
-      break;
-    case 't':
-      stack[0]=tan64(stack[0]);
-      break;
-    case 'l':
-      stack[0]=log64(stack[0]);
-      break;
-    case 'e':
-      stack[0]=exp64(stack[0]);
-      break;
-/*      
     case 'a':
+      stackx=f64(1)/stackx;
+      break;
     case 'b':
+      stackx=sqrt64(stackx);
+      break;
     case 'c':
+      stackx=exp64(stackx*log64(stack_pull()));
+      break;
     case 'd':
+      stackx=log64(stackx);
+      break;
     case 'e':
+      stackx=log64(stackx)/log64(10);
+      break;
     case 'f':
+      stack_swapxy();
+      break;
     case 'g':
+      stack_pull();
+      break;
     case 'h':
+      stackx=sin64(stackx);
+      break;
     case 'i':
+      stackx=cos64(stackx);
+      break;
     case 'j':
+      stackx=tan64(stackx);
+      break;
     case 'k':
     case 'l':
     case 'm':
     case 'n':
     case 'o':
-    case 'p':
-    case 'q':
-    case 'r':
-      PrDev->print(key);
       break;
-*/      
+    case 'p':
+      stackx=-stackx;
+      break;
     case '\177': //pc raw backspace
     case '\010': //backspace
-      stack[0] = 0;
-      goto showstack;
+    case 'r':
+      stackx = 0;
+      push_en=false;
+      break;
     case '\r':
     case '\n':
       stack_push();
@@ -225,19 +242,22 @@ void rpn::key_norm(char key)
       PrDev->print((int)key);
       break;
   }
-showstack:
-      PrDev->lcdprint(stack[1].toString(),1);
-      PrDev->lcdprint(stack[0].toString());
-      Serial.println();
-      Serial.println("----------------");
-      for(int i=STACK_TOP;i>=0;i--)Serial.println(stack[i]);
+
+	PrDev->lcdprint(stacky.toString(),1);
+	PrDev->lcdprint(stackx.toString());
+	Serial.println();
+	Serial.println("----------------");
+	for(int i=STACK_TOP;i>=0;i--)Serial.println(stack[i]);
 }
 
 void rpn::stack_push(void)
 {
-  for(int8_t i=STACK_TOP;i>0;i--){
-    stack[i] = stack[i-1];
+  if(push_en){
+    for(int8_t i=STACK_TOP;i>0;i--){
+      stack[i] = stack[i-1];
+    }
   }
+  push_en=true;
 }
 
 f64 rpn::stack_pull(void)
@@ -248,5 +268,12 @@ f64 rpn::stack_pull(void)
   }
   stack[STACK_TOP]=0;
   return result;
+}
+
+void rpn::stack_swapxy(void)
+{
+  f64 z=stack[1];
+  stack[1]=stack[0];
+  stack[0]=z;
 }
 

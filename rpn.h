@@ -11,6 +11,7 @@ class rpn
   display *PrDev;
   f64 stack[STACK_DEPTH];
   altFn_t altFn;
+  bool push_en;
   public:
   void begin(display &dev);
   rpn(void);
@@ -22,6 +23,7 @@ class rpn
   void key_edit(char key);
   void stack_push(void);
   f64 stack_pull(void);
+  void stack_swapxy(void);
 
 };
 

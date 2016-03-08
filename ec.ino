@@ -9,7 +9,6 @@
 #include "display.h"
 #include "rpn.h"
 
-#if 0
 const byte Rows=8;
 const byte Cols=5;
 
@@ -28,9 +27,7 @@ byte rPins[Rows]={0,1,2,3,4,5,6,7}; //inputs
 byte cPins[Cols]={4,5,6,7,8}; //outputs (can share with LCD)
 
 Keypad kpd= Keypad(makeKeymap(keymap), rPins, cPins, Rows, Cols);
-#else
-Softkey kpd;
-#endif
+Softkey skey;
 
 display lcd;
 const byte pin_BL=10;
@@ -39,11 +36,6 @@ rpn sysrpn;
 
 void setup (void)
 {
-  char str[10];
-  f64 d1, d2;
-  int i;
-  long k;
-
   Serial.begin (115200);
   sysrpn.begin(lcd);
 
@@ -52,18 +44,45 @@ void setup (void)
   
   lcd.clear();
   lcd.print("Hello world!");
+/*
+  Serial.print("Math64::pi = ");
+  Serial.println(pi);
+  Serial.print("rootThree = ");
+  Serial.println(sqrt64(3.0));
+  Serial.print("sin: ");
+  Serial.println(sin64(atof64("1.2")));
+  Serial.print("atan: ");
+  Serial.println(atan64(0.33));
+  Serial.print("log: ");
+  Serial.println(log64(6.0));
+  Serial.print("exp: ");
+  Serial.println(exp64(5.2));
+  Serial.print("sqrt: ");
+  Serial.println(sqrt64(2.0));
 
+  for(int i=0;i<16;i++){
+    f64 d1 = pi;
+    d1.setDecs(i);
+    Serial.println(pi);
+  }
+  Serial.println(atof64("1e42"));
+  Serial.println(atof64("-5.7e4"));
+  Serial.println(atof64("5.7e-4"));
+  Serial.println(atof64("5.7e48"));
+  Serial.println(atof64("5.7e-48"));
+//*/
 } // end of setup
 
 void loop(void)
 {
-//*
   char keypressed = kpd.getKey();
+  if (keypressed == NO_KEY){
+    keypressed = skey.getKey();
+  }
   if (keypressed != NO_KEY){
     //Serial.println(keypressed);
     sysrpn.key_input(keypressed);
   }
-//*/  
 }
 
 int freeRam () {
