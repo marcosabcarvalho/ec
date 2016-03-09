@@ -67,13 +67,19 @@ void rpn::key_norm(char key)
       stack_pull();
       break;
     case 'h':
+      //stackx=altFn&alt_Hyp?sinh64(stackx):sin64(stackx);
       stackx=sin64(stackx);
+      altFn&=~alt_Hyp;
       break;
     case 'i':
+      //stackx=altFn&alt_Hyp?cosh64(stackx):cos64(stackx);
       stackx=cos64(stackx);
+      altFn&=~alt_Hyp;
       break;
     case 'j':
+      //stackx=altFn&alt_Hyp?tanh64(stackx):tan64(stackx);
       stackx=tan64(stackx);
+      altFn&=~alt_Hyp;
       break;
     case 'k':
     case 'l':
@@ -112,47 +118,36 @@ void rpn::key_norm(char key)
 
 void rpn::key_shift(char key)
 {
+  f64 undo_lx = lastx;
+  lastx = stackx;
   if(key!='A')busy();
   switch(key){
     case 'A': //unshift
-      altFn = alt_Norm;
+      lastx = undo_lx;
+      altFn ^= alt_Shift;
       return;
     case 'a':
       stack_push();
       stackx = lastx;
       break;
     case 'b':
-      lastx=stackx;
       stackx = stackx*stackx;
       break;
     case 'c':
       stackx = exp64((f64(1)/stack_pull()) * log64(stacky));
       break;
     case 'd':
-      lastx=stackx;
       stackx=exp64(stackx);
       break;
     case 'e':
-      lastx=stackx;
       stackx=stack_pull()*log64(10);
       break;
     case 'f':
       stack_push();
       stackx=pi;
     case 'g':
-      //hyp
-      break;
-    case 'h':
-      lastx=stackx;
-      stackx=asin64(stackx);
-      break;
-    case 'i':
-      lastx=stackx;
-      stackx=acos64(stackx);
-      break;
-    case 'j':
-      lastx=stackx;
-      stackx=atan64(stackx);
+      lastx = undo_lx;
+      altFn ^= alt_Hyp;
       break;
     case 'k':
     case 'l':
@@ -161,62 +156,58 @@ void rpn::key_shift(char key)
     case 'o':
       break;
     case 'p':
-      lastx=stackx;
       stackx=stackx.fabs();
       break;
     case 'q':
-      lastx=stackx;
       stackx=stackx.intval();
       break;
     case '/':
-      lastx=stackx;
       stackx%=stack_pull();
       break;
 #ifdef EXTRA_FN
+    case 'h':
+      stackx=altFn&alt_Hyp?asinh64(stackx):asin64(stackx);
+      break;
+    case 'i':
+      stackx=altFn&alt_Hyp?acosh64(stackx):acos64(stackx);
+      break;
+    case 'j':
+      stackx=altFn&alt_Hyp?atanh64(stackx):atan64(stackx);
+      break;
     case '7':
-      lastx=stackx;
       stackx=stack_pull()==stackx;
       break;
     case '8':
-      lastx=stackx;
       stackx=stack_pull()<stackx;
       break;
     case '9':
-      lastx=stackx;
       stackx=stack_pull()<=stackx;
       break;
     case '4':
-      lastx=stackx;
       //->R
       break;
     case '5':
-      lastx=stackx;
       //->P
       break;
     case '6':
       //random
       break;
     case '*':
-      lastx=stackx;
       stackx=stackx==0;
       break;
     case '1':
-      lastx=stackx;
       //->HMS
       break;
     case '2':
-      lastx=stackx;
       //HMS->
       break;
     case '3':
       //seed
       break;
     case '-':
-      lastx=stackx;
       stackx=(stackx<0);
       break;
     case '+':
-      lastx=stackx;
       stackx=(stackx<=0);
       break;
     case 'B':
@@ -225,6 +216,18 @@ void rpn::key_shift(char key)
       Serial.println();
       break;
 #else
+    case 'h':
+      stackx=asin64(stackx);
+      break;
+    case 'i':
+      stackx=acos64(stackx);
+      break;
+    case 'j':
+      stackx=atan64(stackx);
+      break;
+    case '*':
+    case '-':
+    case '+':
     case '0' ... '9':
       key_norm(key);
       break;      
