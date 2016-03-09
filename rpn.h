@@ -29,6 +29,7 @@ class rpn
   f64 stack_pull(void);
   void stack_swapxy(void);
   void show_stack(void);
+  void busy(void);
 
 };
 

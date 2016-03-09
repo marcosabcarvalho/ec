@@ -34,6 +34,7 @@ void rpn::key_input(char key)
 
 void rpn::key_norm(char key)
 {
+  if(key!='A')busy();
   switch(key){
     case 'q'://exp
     case '.':
@@ -109,7 +110,7 @@ void rpn::key_norm(char key)
       break;
     case 'A':
       altFn = alt_Shift;
-      return;
+      break;
     case 'B':
     case 'C':
     case 'D':
@@ -128,6 +129,7 @@ void rpn::key_norm(char key)
 
 void rpn::key_shift(char key)
 {
+  if(key!='A')busy();
   switch(key){
     case 'A': //unshift
       altFn = alt_Norm;
@@ -169,7 +171,6 @@ void rpn::key_shift(char key)
       lastx=stackx;
       stackx=atan64(stackx);
       break;
-#if 0
     case 'k':
     case 'l':
     case 'm':
@@ -184,6 +185,7 @@ void rpn::key_shift(char key)
       lastx=stackx;
       stackx=stackx.intval();
       break;
+#if 0
     case '7':
       lastx=stackx;
       stackx=stackx==0;
@@ -275,5 +277,11 @@ void rpn::stack_swapxy(void)
   f64 z=stack[1];
   stack[1]=stack[0];
   stack[0]=z;
+}
+
+void rpn::busy(void)
+{
+  PrDev->clear();
+  PrDev->lcdprint(" ...",1);
 }
 
