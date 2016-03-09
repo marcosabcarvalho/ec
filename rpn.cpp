@@ -5,12 +5,14 @@ rpn::rpn(void)
   altFn = alt_Norm;
   lastx=0;
   push_en=true;
+  deg_en=true;
+  //todeg=f64(90)/f64( 0x3FF921FB, 0x54442D18);//pio2 not defined yet!?
 }
-
 
 void rpn::begin(display &dev)
 {
   PrDev=&dev;
+  todeg=f64(90)/pio2;//this doesn't work in the constructor!?
 }
 
 void rpn::key_input(char key)
@@ -32,6 +34,7 @@ void rpn::key_norm(char key)
     }
     switch(key){
     case 'q'://exp
+    case '.':
     case '0' ... '9':
       stack_push();
       PrDev->lcdprint(stacky.toString(),1);
@@ -72,19 +75,19 @@ void rpn::key_norm(char key)
       stack_pull();
       break;
     case 'h':
-      //stackx=altFn&alt_Hyp?sinh64(stackx):sin64(stackx);
-      stackx=sin64(stackx);
-      altFn&=~alt_Hyp;
+      //altFn&=~alt_Hyp;
+      //stackx=altFn&alt_Hyp?sinh64(stackx):sin64(stackx/todeg);
+      stackx=sin64(stackx/todeg);
       break;
     case 'i':
-      //stackx=altFn&alt_Hyp?cosh64(stackx):cos64(stackx);
-      stackx=cos64(stackx);
-      altFn&=~alt_Hyp;
+      //altFn&=~alt_Hyp;
+      //stackx=altFn&alt_Hyp?cosh64(stackx):cos64(stackx/todeg);
+      stackx=cos64(stackx/todeg);
       break;
     case 'j':
-      //stackx=altFn&alt_Hyp?tanh64(stackx):tan64(stackx);
-      stackx=tan64(stackx);
-      altFn&=~alt_Hyp;
+      //altFn&=~alt_Hyp;
+      //stackx=altFn&alt_Hyp?tanh64(stackx):tan64(stackx/todeg);
+      stackx=tan64(stackx/todeg);
       break;
     case 'k':
     case 'l':
@@ -157,11 +160,7 @@ void rpn::key_shift(char key)
       break;
     case 'f':
       stack_push();
-      stackx=pi;
-    case 'g':
-      lastx = undo_lx;
-      altFn ^= alt_Hyp;
-      break;
+      stackx=f64( 0x3FF921FB, 0x54442D18)*f64(2);
     case 'k':
     case 'l':
     case 'm':
@@ -175,18 +174,22 @@ void rpn::key_shift(char key)
       stackx=stackx.intval();
       break;
 #ifdef EXTRA_FN
+    case 'g':
+      lastx = undo_lx;
+      altFn ^= alt_Hyp;
+      break;
     case '/':
       //stackx%=stack_pull();
       stackx=stacky.ipart()%(long)(stack_pull()); //32-bit version saves ram
       break;
     case 'h':
-      stackx=altFn&alt_Hyp?asinh64(stackx):asin64(stackx);
+      stackx=altFn&alt_Hyp?asinh64(stackx):asin64(stackx)*todeg;
       break;
     case 'i':
-      stackx=altFn&alt_Hyp?acosh64(stackx):acos64(stackx);
+      stackx=altFn&alt_Hyp?acosh64(stackx):acos64(stackx)*todeg;
       break;
     case 'j':
-      stackx=altFn&alt_Hyp?atanh64(stackx):atan64(stackx);
+      stackx=altFn&alt_Hyp?atanh64(stackx):atan64(stackx)*todeg;
       break;
     case '7':
       stackx=stack_pull()==stackx;
@@ -230,17 +233,23 @@ void rpn::key_shift(char key)
       Serial.println();
       break;
 #else
+    case 'g': // deg/rad
+      lastx = undo_lx;
+      deg_en=!deg_en;
+      if(deg_en)todeg=f64(90)/f64( 0x3FF921FB, 0x54442D18);
+      else todeg=1;
+      break;
     case 'h':
-      stackx=asin64(stackx); //no hyp functions
-      //stackx=altFn&alt_Hyp?asinh64(stackx):asin64(stackx);
+      stackx=asin64(stackx)*todeg; //no hyp functions
+      //stackx=altFn&alt_Hyp?asinh64(stackx):asin64(stackx)*todeg;
       break;
     case 'i':
-      stackx=acos64(stackx);
-      //stackx=altFn&alt_Hyp?acosh64(stackx):acos64(stackx);
+      stackx=acos64(stackx)*todeg;
+      //stackx=altFn&alt_Hyp?acosh64(stackx):acos64(stackx)*todeg;
       break;
     case 'j':
-      stackx=atan64(stackx);
-      //stackx=altFn&alt_Hyp?atanh64(stackx):atan64(stackx);
+      stackx=atan64(stackx)*todeg;
+      //stackx=altFn&alt_Hyp?atanh64(stackx):atan64(stackx)*todeg;
       break;
     case '*':
     case '-':

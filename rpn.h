@@ -3,8 +3,8 @@
 
 #define STACK_DEPTH 4
 #define STACK_TOP (STACK_DEPTH-1)
-#define stackx stack[0]
-#define stacky stack[1]
+#define stackx (stack[0])
+#define stacky (stack[1])
 
 #define  alt_Norm 0
 #define  alt_Edit 1
@@ -22,6 +22,8 @@ class rpn
   uint8_t altFn;
   bool push_en;
   f64 stovars[20];
+  f64 todeg;
+  bool deg_en;
 
   public:
   void begin(display &dev);
