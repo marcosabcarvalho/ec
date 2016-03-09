@@ -9,7 +9,6 @@
 #include "display.h"
 #include "rpn.h"
 
-#if 0
 const byte Rows=8;
 const byte Cols=5;
 
@@ -28,7 +27,6 @@ byte rPins[Rows]={0,1,2,3,4,5,6,7}; //inputs
 byte cPins[Cols]={4,5,6,7,8}; //outputs (can share with LCD)
 
 Keypad kpd= Keypad(makeKeymap(keymap), rPins, cPins, Rows, Cols);
-#endif
 Softkey skey;
 
 display lcd;

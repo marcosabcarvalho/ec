@@ -185,22 +185,21 @@ void rpn::key_shift(char key)
       lastx=stackx;
       stackx=stackx.intval();
       break;
-#if 0
     case '7':
       lastx=stackx;
-      stackx=stackx==0;
+      stackx=stack_pull()==stackx;
       break;
     case '8':
       lastx=stackx;
-      stackx=stackx==stack_pull();
+      stackx=stack_pull()<stackx;
       break;
     case '9':
       lastx=stackx;
-      stackx=stackx!=stack_pull();
+      stackx=stack_pull()<=stackx;
       break;
     case '/':
       lastx=stackx;
-      stackx%=stack_pull();
+      //stackx%=stack_pull();
       break;
     case '4':
       lastx=stackx;
@@ -215,7 +214,7 @@ void rpn::key_shift(char key)
       break;
     case '*':
       lastx=stackx;
-      stackx=stackx<stack_pull();
+      stackx=stackx==0;
       break;
     case '1':
       lastx=stackx;
@@ -230,14 +229,20 @@ void rpn::key_shift(char key)
       break;
     case '-':
       lastx=stackx;
-      stackx=stackx>stack_pull();
+      stackx=(stackx<0);
+      break;
+    case '+':
+      lastx=stackx;
+      stackx=(stackx<=0);
       break;
     case 'B':
       Serial.print(stackx.bits(1),16);
       Serial.println(stackx.bits(0),16);
       Serial.println();
       break;
-#endif
+    default:
+      lastx=stackx;
+      break;
   }
   altFn = alt_Norm;
   show_stack();
