@@ -21,11 +21,16 @@ void rpn::key_input(char key)
 
 void rpn::key_norm(char key)
 {
-  f64 undo_lx = lastx;
-  lastx = stackx;
-  if(key!='A')busy();
+  f64 undo_lx=lastx;
   if(altFn&alt_Shift)key_shift(key);
-  else switch(key){
+  else if(altFn&alt_Sto)sto(key);
+  else if(altFn&alt_Rcl)rcl(key);
+  else{
+    if(key!='A' && !(altFn&alt_Sto)){
+      busy();
+      lastx = stackx;
+    }
+    switch(key){
     case 'q'://exp
     case '0' ... '9':
       stack_push();
@@ -97,11 +102,17 @@ void rpn::key_norm(char key)
       push_en=false;
       break;
     case 'A':
-      altFn ^= alt_Shift;
+      altFn |= alt_Shift;
       lastx = undo_lx;
       break;
     case 'B':
+      PrDev->lcdprint("STO:_");
+      altFn |= alt_Sto;
+      return;
     case 'C':
+      PrDev->lcdprint("RCL:_");
+      altFn |= alt_Rcl;
+      return;
     case 'D':
       break;
     case '\r':
@@ -112,18 +123,20 @@ void rpn::key_norm(char key)
     default:
       PrDev->print(key);
       break;
+    }
   }
   show_stack();
 }
 
 void rpn::key_shift(char key)
 {
-  f64 undo_lx = lastx;
-  lastx = stackx;
-  if(key!='A')busy();
+  f64 undo_lx = lastx;;
+  if(key!='a' && key!='A' && !(altFn&alt_Sto)){
+    busy();
+    lastx = stackx;
+  }
   switch(key){
     case 'A': //unshift
-      lastx = undo_lx;
       altFn ^= alt_Shift;
       return;
     case 'a':
@@ -161,10 +174,11 @@ void rpn::key_shift(char key)
     case 'q':
       stackx=stackx.intval();
       break;
-    case '/':
-      stackx%=stack_pull();
-      break;
 #ifdef EXTRA_FN
+    case '/':
+      //stackx%=stack_pull();
+      stackx=stacky.ipart()%(long)(stack_pull()); //32-bit version saves ram
+      break;
     case 'h':
       stackx=altFn&alt_Hyp?asinh64(stackx):asin64(stackx);
       break;
@@ -217,13 +231,16 @@ void rpn::key_shift(char key)
       break;
 #else
     case 'h':
-      stackx=asin64(stackx);
+      stackx=asin64(stackx); //no hyp functions
+      //stackx=altFn&alt_Hyp?asinh64(stackx):asin64(stackx);
       break;
     case 'i':
       stackx=acos64(stackx);
+      //stackx=altFn&alt_Hyp?acosh64(stackx):acos64(stackx);
       break;
     case 'j':
       stackx=atan64(stackx);
+      //stackx=altFn&alt_Hyp?atanh64(stackx):atan64(stackx);
       break;
     case '*':
     case '-':
@@ -231,6 +248,9 @@ void rpn::key_shift(char key)
     case '0' ... '9':
       key_norm(key);
       break;      
+    case '/':
+      stackx=stacky.ipart()%(long)(stack_pull()); //32-bit version saves ram
+      break;
 #endif      
     default:
       lastx=stackx;
@@ -246,6 +266,7 @@ void rpn::show_stack(void)
   PrDev->lcdprint(stackx.toString());
   Serial.println();
   Serial.println("----------------");
+
   for(int i=STACK_TOP;i>=0;i--)Serial.println(stack[i]);
 }
 
@@ -261,7 +282,6 @@ void rpn::stack_push(void)
 
 f64 rpn::stack_pull(void)
 {
-  lastx = stack[0];
   for(int8_t i=0;i<STACK_TOP;i++){
     stack[i] = stack[i+1];
   }
@@ -280,5 +300,35 @@ void rpn::busy(void)
 {
   PrDev->clear();
   PrDev->lcdprint(" ...",1);
+}
+
+int8_t rpn::varidx(char key)
+{
+  int8_t n=-1;
+  if(key>='a' && key<='j')n=key-'a';
+  else if(key>='0' and key<='9')n=key-'0';
+  return n;
+}
+void rpn::sto(char key)
+{
+  int8_t n = varidx(key);
+  if(n>=0){
+    stovars[n] = stackx;
+    PrDev->print(key);
+    delay(200);
+  }
+  PrDev->lcdprint(stackx.toString());
+  altFn&=~alt_Sto;
+}
+
+void rpn::rcl(char key)
+{
+  int8_t n = varidx(key);
+  if(n>=0){
+    stack_push();
+    stackx = stovars[n];
+  }
+  PrDev->lcdprint(stackx.toString());
+  altFn&=~alt_Rcl;
 }
 

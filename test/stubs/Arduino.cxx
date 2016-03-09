@@ -45,3 +45,8 @@ char Print::read(void)
   return ch_;
 }
 
+void delay(long ms)
+{
+  usleep(1000*ms);
+}
+

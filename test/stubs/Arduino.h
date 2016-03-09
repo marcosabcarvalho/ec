@@ -11,6 +11,7 @@
 
 void setup(void);
 void loop(void);
+void delay(long);
 
 typedef uint8_t byte;
 

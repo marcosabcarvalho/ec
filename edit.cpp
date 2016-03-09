@@ -47,6 +47,11 @@ void rpn::key_edit(char key)
     sexp=ex=false;
   }
   switch(key){
+    case 'B':
+      stack_push();
+      stackx = strtof64(&edln[!neg], NULL);
+      key_norm(key);
+      break;
     case '0' ... '9':
       if(ex){
         if(exv*10+(key-'0')>=307)break;
@@ -56,7 +61,7 @@ void rpn::key_edit(char key)
       edln[edpos++]=key;
       PrDev->print(key);
       break;
-    case ',': //sign
+    case 'p': //sign
       if(ex){
         sexp^=1;
         set_exp_sign(edln+expos,sexp);
@@ -68,7 +73,7 @@ void rpn::key_edit(char key)
       PrDev->lcdclear(0);
       PrDev->print(&edln[!neg]);
       break;
-    case 'p':
+    case '.':
       if(!point){
         if(edpos<2){
           PrDev->print('0');
