@@ -6,14 +6,18 @@
 #define stackx stack[0]
 #define stacky stack[1]
 
-typedef enum {alt_Norm, alt_Edit, alt_Shift, alt_Alpha, alt_Hyp} altFn_t;
+#define  alt_Norm 0
+#define  alt_Edit 1
+#define  alt_Shift 2
+#define  alt_Hyp 4
+#define  alt_Alpha 8
 
 class rpn
 {
   display *PrDev;
   f64 stack[STACK_DEPTH];
   f64 lastx;
-  altFn_t altFn;
+  uint8_t altFn;
   bool push_en;
   public:
   void begin(display &dev);

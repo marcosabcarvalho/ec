@@ -15,29 +15,18 @@ void rpn::begin(display &dev)
 
 void rpn::key_input(char key)
 {
-  switch(altFn){
-    case alt_Norm:
-      key_norm(key);
-      break;
-    case alt_Edit:
-      key_edit(key);
-      break;  
-    case alt_Shift:
-      key_shift(key);
-      break;
-    case alt_Alpha:
-      break;
-    case alt_Hyp:
-      break;
-  }
+  if(altFn&alt_Edit)key_edit(key);
+  else key_norm(key);
 }
 
 void rpn::key_norm(char key)
 {
+  f64 undo_lx = lastx;
+  lastx = stackx;
   if(key!='A')busy();
-  switch(key){
+  if(altFn&alt_Shift)key_shift(key);
+  else switch(key){
     case 'q'://exp
-    case '.':
     case '0' ... '9':
       stack_push();
       PrDev->lcdprint(stacky.toString(),1);
@@ -57,22 +46,18 @@ void rpn::key_norm(char key)
       stackx/=stack_pull();
       break;
     case 'a':
-      lastx=stackx;
       stackx=f64(1)/stackx;
       break;
     case 'b':
-      lastx=stackx;
       stackx=sqrt64(stackx);
       break;
     case 'c':
       stackx=exp64(stack_pull() * log64(stacky));
       break;
     case 'd':
-      lastx=stackx;
       stackx=log64(stackx);
       break;
     case 'e':
-      lastx=stackx;
       stackx=log64(stackx)/log64(10);
       break;
     case 'f':
@@ -82,15 +67,12 @@ void rpn::key_norm(char key)
       stack_pull();
       break;
     case 'h':
-      lastx=stackx;
       stackx=sin64(stackx);
       break;
     case 'i':
-      lastx=stackx;
       stackx=cos64(stackx);
       break;
     case 'j':
-      lastx=stackx;
       stackx=tan64(stackx);
       break;
     case 'k':
@@ -109,7 +91,8 @@ void rpn::key_norm(char key)
       push_en=false;
       break;
     case 'A':
-      altFn = alt_Shift;
+      altFn ^= alt_Shift;
+      lastx = undo_lx;
       break;
     case 'B':
     case 'C':
@@ -121,7 +104,7 @@ void rpn::key_norm(char key)
       break;
 
     default:
-      PrDev->print((int)key);
+      PrDev->print(key);
       break;
   }
   show_stack();
@@ -185,6 +168,11 @@ void rpn::key_shift(char key)
       lastx=stackx;
       stackx=stackx.intval();
       break;
+    case '/':
+      lastx=stackx;
+      stackx%=stack_pull();
+      break;
+#ifdef EXTRA_FN
     case '7':
       lastx=stackx;
       stackx=stack_pull()==stackx;
@@ -196,10 +184,6 @@ void rpn::key_shift(char key)
     case '9':
       lastx=stackx;
       stackx=stack_pull()<=stackx;
-      break;
-    case '/':
-      lastx=stackx;
-      //stackx%=stack_pull();
       break;
     case '4':
       lastx=stackx;
@@ -240,6 +224,11 @@ void rpn::key_shift(char key)
       Serial.println(stackx.bits(0),16);
       Serial.println();
       break;
+#else
+    case '0' ... '9':
+      key_norm(key);
+      break;      
+#endif      
     default:
       lastx=stackx;
       break;
