@@ -29,6 +29,7 @@ class rpn
   void begin(display &dev);
   rpn(void);
   void key_input(char key);
+  void show_stack(void);
 
   private:
   void displayline(int n);
@@ -38,7 +39,6 @@ class rpn
   void stack_push(void);
   f64 stack_pull(void);
   void stack_swapxy(void);
-  void show_stack(void);
   void busy(void);
   int8_t varidx(char key);
   void sto(char key);

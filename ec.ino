@@ -39,12 +39,12 @@ rpn sysrpn;
 void setup (void)
 {
   Serial.begin (115200);
+  lcd.clear();
   sysrpn.begin(lcd);
 
   pinMode(pin_BL, OUTPUT);
   digitalWrite(pin_BL, HIGH);
   
-  lcd.clear();
 /*
   lcd.print("Hello world!");
   Serial.print("Math64::pi = ");

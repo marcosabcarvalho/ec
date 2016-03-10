@@ -13,6 +13,7 @@ void rpn::begin(display &dev)
 {
   PrDev=&dev;
   todeg=f64(90)/pio2;//this doesn't work in the constructor!?
+  show_stack();
 }
 
 void rpn::key_input(char key)
@@ -315,7 +316,7 @@ int8_t rpn::varidx(char key)
 {
   int8_t n=-1;
   if(key>='a' && key<='j')n=key-'a';
-  else if(key>='0' and key<='9')n=key-'0';
+  else if(key>='0' and key<='9')n=key-'0'+10;
   return n;
 }
 void rpn::sto(char key)
