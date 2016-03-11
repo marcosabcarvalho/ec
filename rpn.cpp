@@ -6,6 +6,7 @@ rpn::rpn(void)
   lastx=0;
   push_en=true;
   deg_en=true;
+  stack_index=0;
   //todeg=f64(90)/f64( 0x3FF921FB, 0x54442D18);//pio2 not defined yet!?
 }
 
@@ -272,38 +273,41 @@ void rpn::key_shift(char key)
 
 void rpn::show_stack(void)
 {
+  int i,j;
   PrDev->lcdprint(stacky.toString(),1);
   PrDev->lcdprint(stackx.toString());
   Serial.println();
   Serial.println("----------------");
 
-  for(int i=STACK_TOP;i>=0;i--)Serial.println(stack[i]);
+  for(i=0,j=stack_index+STACK_TOP;i<STACK_DEPTH;i++,j--){
+    Serial.println(stack[j%STACK_DEPTH]);
+  }
 }
 
 void rpn::stack_push(void)
 {
   if(push_en){
-    for(int8_t i=STACK_TOP;i>0;i--){
-      stack[i] = stack[i-1];
-    }
+    stack_index+=STACK_TOP;
+    stack_index%=STACK_DEPTH;
+    stackx = stacky;
   }
   push_en=true;
 }
 
 f64 rpn::stack_pull(void)
 {
-  for(int8_t i=0;i<STACK_TOP;i++){
-    stack[i] = stack[i+1];
-  }
-  stack[STACK_TOP]=0;
+  stack_index++;
+  stack_index%=STACK_DEPTH;
+  //stackt = stacks; //duplicate the stack top
+  stackt = 0; //zero stack top
   return lastx;
 }
 
 void rpn::stack_swapxy(void)
 {
-  f64 z=stack[1];
-  stack[1]=stack[0];
-  stack[0]=z;
+  f64 z=stacky;
+  stacky=stackx;
+  stackx=z;
 }
 
 void rpn::busy(void)

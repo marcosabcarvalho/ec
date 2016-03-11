@@ -3,8 +3,10 @@
 
 #define STACK_DEPTH 4
 #define STACK_TOP (STACK_DEPTH-1)
-#define stackx (stack[0])
-#define stacky (stack[1])
+#define stackx (stack[stack_index])
+#define stacky (stack[(stack_index+1)%STACK_DEPTH])
+#define stackt (stack[(stack_index+STACK_TOP)%STACK_DEPTH]) //top
+#define stacks (stack[(stack_index+STACK_TOP-1)%STACK_DEPTH]) //top-1
 
 #define  alt_Norm 0
 #define  alt_Edit 1
@@ -19,6 +21,7 @@ class rpn
   display *PrDev;
   f64 stack[STACK_DEPTH];
   f64 lastx;
+  uint8_t stack_index;
   uint8_t altFn;
   bool push_en;
   f64 stovars[20];
