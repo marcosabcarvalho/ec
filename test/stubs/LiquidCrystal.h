@@ -5,10 +5,11 @@
 class LiquidCrystal : public Print
 {
   public:
-    LiquidCrystal(int,int,int,int,int,int){}
+    LiquidCrystal(){}
     void begin(int,int){}
     void clear(void){printf("\r\n");}
     void setCursor(int,int){printf("\r\n");}
+    void setPinMode(int){}
 };
 
 #endif

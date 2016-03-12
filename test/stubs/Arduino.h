@@ -6,8 +6,14 @@
 
 #define NOT_ARDUINO
 
+#define INPUT 1
+#define OUTPUT 0
+#define HIGH 1
+#define LOW 0
+#define INPUT_PULLUP 2
 #define pinMode(a,b)
 #define digitalWrite(a,b)
+#define digitalRead(a) HIGH
 
 void setup(void);
 void loop(void);

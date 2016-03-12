@@ -2,15 +2,18 @@
 
 /* simple wrapper class to handle LCD lines */
 
-display::display(void) : LiquidCrystal(8,9,4,5,6,7)
+//display::display(void) : LiquidCrystal(8,9,4,5,6,7)
+display::display(void) : LiquidCrystal()
 {
   init();
 }
 
+/*
 display::display(uint8_t rs,uint8_t en,uint8_t d0,uint8_t d1,uint8_t d2,uint8_t d3) : LiquidCrystal(rs,en,d0,d1,d2,d3)
 {
   init();
 }
+*/
 
 void display::init(void)
 {
@@ -34,5 +37,4 @@ void display::lcdclear(bool topline)
   print("                ");
   setCursor(LCD_LEFT,!topline);
 }
-
 

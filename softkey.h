@@ -1,6 +1,6 @@
 #include <HardwareSerial.h>
 
-#define NO_KEY 0
+#define NO_KEY -1
 
 class Softkey
 {

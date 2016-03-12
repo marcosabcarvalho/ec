@@ -91,12 +91,6 @@ void rpn::key_norm(char key)
       //stackx=altFn&alt_Hyp?tanh64(stackx):tan64(stackx/todeg);
       stackx=tan64(stackx/todeg);
       break;
-    case 'k':
-    case 'l':
-    case 'm':
-    case ';':
-    case '\'':
-      break;
     case 'p':
       stackx=-stackx;
       break;
@@ -163,12 +157,6 @@ void rpn::key_shift(char key)
     case 'f':
       stack_push();
       stackx=f64( 0x3FF921FB, 0x54442D18)*f64(2);
-    case 'k':
-    case 'l':
-    case 'm':
-    case 'n':
-    case 'o':
-      break;
     case 'p':
       stackx=stackx.fabs();
       break;
@@ -262,6 +250,13 @@ void rpn::key_shift(char key)
     case '/':
       stackx=stacky.ipart()%(long)(stack_pull()); //32-bit version saves ram
       break;
+/*      
+    case 'B':
+      Serial.print(stackx.bits(1),16);
+      Serial.println(stackx.bits(0),16);
+      Serial.println();
+      break;
+//*/      
 #endif      
     default:
       lastx=stackx;

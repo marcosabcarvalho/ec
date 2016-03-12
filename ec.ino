@@ -2,39 +2,28 @@
 #include <Arduino.h>
 #include <Float64.h>
 #include <Math64.h>
-#include <Keypad.h>
-#include <Key.h>
 
 #include "softkey.h"
 #include "display.h"
 #include "rpn.h"
 
-#if 0
-const byte Rows=8;
-const byte Cols=5;
-
-char keymap[Rows][Cols]={
-  {'a', 'b', 'c', 'd', 'e'},
-  {'f', 'g', 'h', 'i', 'j'},
-  {'k', 'l', 'm', ';', '\''},
-  {'\n', '\n', 'p', 'q', '\\'},
-  {'A', '7', '8', '9', '/'},
-  {'B', '4', '5', '6', '*'},
-  {'C', '1', '2', '3', '-'},
-  {'D', '0', '.', '?', '+'},
-};
-
-byte rPins[Rows]={0,1,2,3,4,5,6,7}; //inputs
-byte cPins[Cols]={4,5,6,7,8}; //outputs (can share with LCD)
-
-Keypad kpd= Keypad(makeKeymap(keymap), rPins, cPins, Rows, Cols);
-#endif
 Softkey skey;
 
 display lcd;
 const byte pin_BL=10;
 
 rpn sysrpn;
+
+const int8_t rpin[]={10,11,12,13,14,15,16};
+
+char keyval[]="\
+abcde\
+fghij\
+\n\nPE\010\
+?789/\
+S456*\
+R123-\
+!0.y+";
 
 void setup (void)
 {
@@ -44,6 +33,10 @@ void setup (void)
 
   pinMode(pin_BL, OUTPUT);
   digitalWrite(pin_BL, HIGH);
+
+  for(int i=0;i<7;i++){
+    pinMode(rpin[i], INPUT_PULLUP);
+  }
   
 /*
   lcd.print("Hello world!");
@@ -75,10 +68,39 @@ void setup (void)
 //*/
 } // end of setup
 
+int8_t scankeys(void)
+{
+  const int8_t cpin[]={4,5,6,7,8}; //shared with lcd
+  int8_t i,r,c;
+  bool keydown=false;
+  int8_t key=-1;
+
+  lcd.setPinMode(INPUT);
+  for(c=0;c<5;c++){
+    pinMode(cpin[c],OUTPUT);
+    digitalWrite(cpin[c],LOW);
+    for(r=0;r<7;r++){
+      if(digitalRead(rpin[r]) == LOW){
+        keydown=true;
+        key=c*5+r;
+        break;
+      }
+    }
+    pinMode(cpin[c],INPUT); //high Z
+  }
+  lcd.setPinMode(OUTPUT);//for lcd
+  return key;
+}
+
+int8_t getKey(void)
+{
+  while(scankeys()>=0)delay(10); //wait for release
+  return scankeys();
+}
+
 void loop(void)
 {
-  char keypressed = NO_KEY;;
-  //keypressed = kpd.getKey();
+  char keypressed = getKey();
   if (keypressed == NO_KEY){
     keypressed = skey.getKey();
   }
@@ -88,6 +110,7 @@ void loop(void)
   }
 }
 
+/*
 int freeRam () {
 #ifndef NOT_ARDUINO
   extern int __heap_start, *__brkval;
@@ -96,5 +119,6 @@ int freeRam () {
 #endif
   return -1;
 }
+*/
 
 
