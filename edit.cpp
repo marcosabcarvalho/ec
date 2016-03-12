@@ -35,6 +35,7 @@ void rpn::key_edit(char key)
   static int8_t edpos=0,expos=0;
   static bool neg,point,ex, sexp=0;
   static int16_t exv=0;
+  f64 result;
 
   if(!(altFn&alt_Edit)){
     altFn |= alt_Edit;
@@ -47,11 +48,13 @@ void rpn::key_edit(char key)
     sexp=ex=false;
   }
   switch(key){
+/*
     case 'B':
       stack_push();
       stackx = strtof64(&edln[!neg], NULL);
       key_norm(key);
       break;
+*/      
     case '0' ... '9':
       if(ex){
         if(exv*10+(key-'0')>=307)break;
@@ -60,8 +63,9 @@ void rpn::key_edit(char key)
       }
       edln[edpos++]=key;
       PrDev->print(key);
+      if( (altFn&alt_Fix) && ((edpos>2) || (key>'1')) )goto xit;
       break;
-    case 'p': //sign
+    case '_': //sign
       if(ex){
         sexp^=1;
         set_exp_sign(edln+expos,sexp);
@@ -84,7 +88,7 @@ void rpn::key_edit(char key)
       }
       point=true;
       break;
-    case 'q':
+    case 'E':
       if(!ex){
         if(edpos==1){ /* eex cannot be first */
           PrDev->print('1');
@@ -117,17 +121,22 @@ void rpn::key_edit(char key)
         PrDev->lcdprint(&edln[!neg]);
       }
       break;
+    //case '\r':
     case '\n':
-    case '\r':
-      altFn=alt_Norm;
+xit:
       edln[edpos]='\0';
-      stackx = strtof64(&edln[!neg], NULL);
+      result = strtof64(&edln[!neg], NULL);
+      if(altFn&alt_Fix){
+        //printf("Fix:%d\n",result.ipart());
+        stackx.setDecs(result.ipart());
+      }
+      else stackx=result;
+      altFn=alt_Norm;
       push_en=true;
       show_stack();
-      //key_norm(key);
       return;
       break;
-    case 'A': //shift
+    case '?': //shift
       altFn^=alt_Shift;
       break;
     default:
@@ -137,5 +146,11 @@ void rpn::key_edit(char key)
       //key_norm(key);
       break;
   }
+/*
+  if((altFn&alt_Fix) && ((edpos>2)||key=='\r')){
+    altFn=alt_Norm;
+    printf("FIX=%s\n",edln+1);
+  }
+*/  
 }
 

@@ -15,6 +15,7 @@
 #define  alt_Alpha 8
 #define  alt_Sto 16
 #define  alt_Rcl 32
+#define  alt_Fix 64
 
 class rpn
 {

@@ -30,12 +30,12 @@ void rpn::key_norm(char key)
   else if(altFn&alt_Sto)sto(key);
   else if(altFn&alt_Rcl)rcl(key);
   else{
-    if(key!='A' && !(altFn&alt_Sto)){
+    if(key!='?' && !(altFn&alt_Sto)){
       busy();
       lastx = stackx;
     }
     switch(key){
-    case 'q'://exp
+    case 'E'://exp
     case '.':
     case '0' ... '9':
       if(push_en)stack_push();
@@ -91,7 +91,7 @@ void rpn::key_norm(char key)
       //stackx=altFn&alt_Hyp?tanh64(stackx):tan64(stackx/todeg);
       stackx=tan64(stackx/todeg);
       break;
-    case 'p':
+    case '_':
       stackx=-stackx;
       break;
     case '\177': //pc raw backspace
@@ -100,19 +100,19 @@ void rpn::key_norm(char key)
       stackx = 0;
       push_en=false;
       break;
-    case 'A':
+    case '?':
       altFn |= alt_Shift;
       lastx = undo_lx;
       break;
-    case 'B':
+    case 'S':
       PrDev->lcdprint("STO:_");
       altFn |= alt_Sto;
       return;
-    case 'C':
+    case 'R':
       PrDev->lcdprint("RCL:_");
       altFn |= alt_Rcl;
       return;
-    case 'D':
+    case '!':
       break;
     case '\r':
     case '\n':
@@ -120,7 +120,7 @@ void rpn::key_norm(char key)
       break;
 
     default:
-      PrDev->print(key);
+      //PrDev->print(key);
       break;
     }
   }
@@ -130,12 +130,12 @@ void rpn::key_norm(char key)
 void rpn::key_shift(char key)
 {
   f64 undo_lx = lastx;;
-  if(key!='a' && key!='A' && !(altFn&alt_Sto)){
+  if(key!='a' && key!='?' && !(altFn&alt_Sto)){
     busy();
     lastx = stackx;
   }
   switch(key){
-    case 'A': //unshift
+    case '?': //unshift
       altFn ^= alt_Shift;
       return;
     case 'a':
@@ -157,12 +157,17 @@ void rpn::key_shift(char key)
     case 'f':
       stack_push();
       stackx=f64( 0x3FF921FB, 0x54442D18)*f64(2);
-    case 'p':
+    case '_':
       stackx=stackx.fabs();
       break;
-    case 'q':
+    case 'E':
       stackx=stackx.intval();
       break;
+    case '+':
+      PrDev->lcdprint("Fix:_");
+      altFn = alt_Fix;
+      key_edit(0);
+      return;
 #ifdef EXTRA_FN
     case 'g':
       lastx = undo_lx;
@@ -243,7 +248,8 @@ void rpn::key_shift(char key)
       break;
     case '*':
     case '-':
-    case '+':
+      break;
+    //case '+':
     case '0' ... '9':
       key_norm(key);
       break;      
