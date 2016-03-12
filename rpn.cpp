@@ -6,6 +6,7 @@ rpn::rpn(void)
   lastx=0;
   push_en=true;
   deg_en=true;
+  hex_en=false;
   stack_index=0;
   //todeg=f64(90)/f64( 0x3FF921FB, 0x54442D18);//pio2 not defined yet!?
 }
@@ -38,7 +39,7 @@ void rpn::key_norm(char key)
     case 'E'://exp
     case '.':
     case '0' ... '9':
-      if(push_en)stack_push();
+      if(push_en && !(altFn&alt_Fix))stack_push();
       PrDev->lcdprint(stacky.toString(),1);
       PrDev->lcdclear(0);
       key_edit(key);
@@ -118,7 +119,11 @@ void rpn::key_norm(char key)
     case '\n':
       stack_push();
       break;
-
+    case 'X':
+      lastx = undo_lx;
+      hex_en ^= 1;
+      lastx.setBase(hex_en?16:10);
+      break;
     default:
       //PrDev->print(key);
       break;
@@ -168,6 +173,7 @@ void rpn::key_shift(char key)
       altFn = alt_Fix;
       key_edit(0);
       return;
+      
 #ifdef EXTRA_FN
     case 'g':
       lastx = undo_lx;

@@ -54,7 +54,9 @@ void rpn::key_edit(char key)
       stackx = strtof64(&edln[!neg], NULL);
       key_norm(key);
       break;
-*/      
+*/ 
+    case 0: //dummy: do nothing
+      return;     
     case '0' ... '9':
       if(ex){
         if(exv*10+(key-'0')>=307)break;
@@ -139,18 +141,12 @@ xit:
     case '?': //shift
       altFn^=alt_Shift;
       break;
-    default:
-      //altFn&=~alt_Edit;
-      //edln[edpos]='\0';
-      //stackx = strtof64(&edln[!neg], NULL);
-      //key_norm(key);
+    default: /* do other functions immediately */
+      altFn&=~alt_Edit;
+      edln[edpos]='\0';
+      stackx = strtof64(&edln[!neg], NULL);
+      key_norm(key);
       break;
   }
-/*
-  if((altFn&alt_Fix) && ((edpos>2)||key=='\r')){
-    altFn=alt_Norm;
-    printf("FIX=%s\n",edln+1);
-  }
-*/  
 }
 

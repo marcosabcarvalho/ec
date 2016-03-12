@@ -28,6 +28,7 @@ class rpn
   f64 stovars[20];
   f64 todeg;
   bool deg_en;
+  bool hex_en;
 
   public:
   void begin(display &dev);
