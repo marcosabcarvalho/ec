@@ -122,18 +122,20 @@ void rpn::key_edit(char key)
       altFn=alt_Norm;
       edln[edpos]='\0';
       stackx = strtof64(&edln[!neg], NULL);
-      push_en=false;
-      key_norm(key);
+      push_en=true;
+      show_stack();
+      //key_norm(key);
       return;
       break;
     case 'A': //shift
       altFn^=alt_Shift;
       break;
     default:
-      altFn&=~alt_Edit;
-      edln[edpos]='\0';
-      stackx = strtof64(&edln[!neg], NULL);
-      key_norm(key);
+      //altFn&=~alt_Edit;
+      //edln[edpos]='\0';
+      //stackx = strtof64(&edln[!neg], NULL);
+      //key_norm(key);
+      break;
   }
 }
 

@@ -13,6 +13,7 @@
 #define INPUT_PULLUP 2
 #define pinMode(a,b)
 #define digitalWrite(a,b)
+#define analogWrite(a,b)
 #define digitalRead(a) HIGH
 
 void setup(void);

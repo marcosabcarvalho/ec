@@ -38,7 +38,7 @@ void rpn::key_norm(char key)
     case 'q'://exp
     case '.':
     case '0' ... '9':
-      stack_push();
+      if(push_en)stack_push();
       PrDev->lcdprint(stacky.toString(),1);
       PrDev->lcdclear(0);
       key_edit(key);
@@ -281,12 +281,9 @@ void rpn::show_stack(void)
 
 void rpn::stack_push(void)
 {
-  if(push_en){
-    stack_index+=STACK_TOP;
-    stack_index%=STACK_DEPTH;
-    stackx = stacky;
-  }
-  push_en=true;
+  stack_index+=STACK_TOP;
+  stack_index%=STACK_DEPTH;
+  stackx = stacky;
 }
 
 f64 rpn::stack_pull(void)

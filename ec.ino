@@ -23,7 +23,7 @@ fghij\
 ?789/\
 S456*\
 R123-\
-!0.y+";
+!0.X+";
 
 void setup (void)
 {
@@ -32,7 +32,8 @@ void setup (void)
   sysrpn.begin(lcd);
 
   pinMode(pin_BL, OUTPUT);
-  digitalWrite(pin_BL, HIGH);
+  //digitalWrite(pin_BL, HIGH);
+  analogWrite(pin_BL, 100);
 
   for(int i=0;i<7;i++){
     pinMode(rpin[i], INPUT_PULLUP);
@@ -73,7 +74,7 @@ int8_t scankeys(void)
   const int8_t cpin[]={4,5,6,7,8}; //shared with lcd
   int8_t i,r,c;
   bool keydown=false;
-  int8_t key=-1;
+  int8_t key=NO_KEY;
 
   lcd.setPinMode(INPUT);
   for(c=0;c<5;c++){
@@ -101,7 +102,10 @@ int8_t getKey(void)
 void loop(void)
 {
   char keypressed = getKey();
-  if (keypressed == NO_KEY){
+  if(keypressed > NO_KEY){
+    keypressed = keyval[keypressed];
+  }
+  else{
     keypressed = skey.getKey();
   }
   if (keypressed != NO_KEY){
