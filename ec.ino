@@ -10,7 +10,7 @@
 Softkey skey;
 
 display lcd;
-const byte pin_BL=10;
+//const byte pin_BL=10;
 
 rpn sysrpn;
 
@@ -24,6 +24,15 @@ fghij\
 S456*\
 R123-\
 !0.X+";
+
+char keychar[]="\
+abcde\
+fghij\
+.....\
+.klmn\
+.opqr\
+.stuv\
+.wxyz";
 
 void setup (void)
 {
@@ -101,16 +110,18 @@ int8_t getKey(void)
 
 void loop(void)
 {
+  char kv=NO_KEY, kc;
   char keypressed = getKey();
   if(keypressed > NO_KEY){
-    keypressed = keyval[keypressed];
+    kv = keyval[keypressed];
+    kc = keychar[keypressed];
   }
   else{
-    keypressed = skey.getKey();
+    kv = kc = skey.getKey();
   }
-  if (keypressed != NO_KEY){
+  if (kv != NO_KEY){
     //Serial.println(keypressed);
-    sysrpn.key_input(keypressed);
+    sysrpn.key_input(kv,kc);
   }
 }
 

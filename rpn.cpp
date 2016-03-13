@@ -8,28 +8,35 @@ rpn::rpn(void)
   deg_en=true;
   hex_en=false;
   stack_index=0;
-  //todeg=f64(90)/f64( 0x3FF921FB, 0x54442D18);//pio2 not defined yet!?
 }
 
 void rpn::begin(display &dev)
 {
   PrDev=&dev;
-  todeg=f64(90)/pio2;//this doesn't work in the constructor!?
+  todeg=f64(90)/pio2;//this doesn't work in the constructor!
   show_stack();
 }
 
-void rpn::key_input(char key)
+void rpn::key_input(char key,char ch)
 {
   if(altFn&alt_Edit)key_edit(key);
-  else key_norm(key);
+  else key_norm(key,ch);
 }
 
-void rpn::key_norm(char key)
+void rpn::key_norm(char key){
+  key_norm(key,'.');
+}
+
+void rpn::key_norm(char key, char ch)
 {
   f64 undo_lx=lastx;
   if(altFn&alt_Shift)key_shift(key);
-  else if(altFn&alt_Sto)sto(key);
-  else if(altFn&alt_Rcl)rcl(key);
+  else if(altFn&alt_Sto)sto(ch);
+  else if(altFn&alt_Rcl)rcl(ch);
+  else if(altFn&alt_Bri){
+    altFn&=~alt_Bri;
+    analogWrite(pin_BL, ((key-'0')%10)*25);
+  }
   else{
     if(key!='?' && !(altFn&alt_Sto)){
       busy();
@@ -173,6 +180,10 @@ void rpn::key_shift(char key)
       altFn = alt_Fix;
       key_edit(0);
       return;
+    case '!':
+      PrDev->lcdprint("BRI:_");
+      altFn |= alt_Bri;
+      return;
       
 #ifdef EXTRA_FN
     case 'g':
@@ -283,12 +294,13 @@ void rpn::show_stack(void)
   int i,j;
   PrDev->lcdprint(stacky.toString(),1);
   PrDev->lcdprint(stackx.toString());
+#ifdef NOT_ARDUINO  
   Serial.println();
   Serial.println("----------------");
-
   for(i=0,j=stack_index+STACK_TOP;i<STACK_DEPTH;i++,j--){
     Serial.println(stack[j%STACK_DEPTH]);
   }
+#endif  
 }
 
 void rpn::stack_push(void)
@@ -320,20 +332,12 @@ void rpn::busy(void)
   PrDev->lcdprint(" ...",1);
 }
 
-int8_t rpn::varidx(char key)
-{
-  int8_t n=-1;
-  if(key>='a' && key<='j')n=key-'a';
-  else if(key>='0' and key<='9')n=key-'0'+10;
-  return n;
-}
 void rpn::sto(char key)
 {
-  int8_t n = varidx(key);
-  if(n>=0){
-    stovars[n] = stackx;
-    PrDev->print(key);
-    delay(200);
+  if(key!='.'){
+    stovars[key-'a'] = stackx;
+    //PrDev->print(key);
+    //delay(200);
   }
   PrDev->lcdprint(stackx.toString());
   altFn&=~alt_Sto;
@@ -341,10 +345,9 @@ void rpn::sto(char key)
 
 void rpn::rcl(char key)
 {
-  int8_t n = varidx(key);
-  if(n>=0){
+  if(key!='.'){
     stack_push();
-    stackx = stovars[n];
+    stackx = stovars[key-'a'];
   }
   PrDev->lcdprint(stackx.toString());
   altFn&=~alt_Rcl;

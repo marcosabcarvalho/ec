@@ -1,7 +1,7 @@
 #include <Math64.h>
 #include "display.h"
 
-#define STACK_DEPTH 4
+#define STACK_DEPTH 5
 #define STACK_TOP (STACK_DEPTH-1)
 #define stackx (stack[stack_index])
 #define stacky (stack[(stack_index+1)%STACK_DEPTH])
@@ -16,6 +16,7 @@
 #define  alt_Sto 16
 #define  alt_Rcl 32
 #define  alt_Fix 64
+#define  alt_Bri 128
 
 class rpn
 {
@@ -25,7 +26,7 @@ class rpn
   uint8_t stack_index;
   uint8_t altFn;
   bool push_en;
-  f64 stovars[20];
+  f64 stovars[26];
   f64 todeg;
   bool deg_en;
   bool hex_en;
@@ -33,12 +34,13 @@ class rpn
   public:
   void begin(display &dev);
   rpn(void);
-  void key_input(char key);
+  void key_input(char key, char ch);
   void show_stack(void);
 
   private:
   void displayline(int n);
   void key_norm(char key);
+  void key_norm(char key,char ch);
   void key_edit(char key);
   void key_shift(char key);
   void stack_push(void);

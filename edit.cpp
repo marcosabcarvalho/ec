@@ -48,15 +48,11 @@ void rpn::key_edit(char key)
     sexp=ex=false;
   }
   switch(key){
-/*
-    case 'B':
-      stack_push();
-      stackx = strtof64(&edln[!neg], NULL);
-      key_norm(key);
-      break;
-*/ 
     case 0: //dummy: do nothing
-      return;     
+      return;
+    case 'a' ... 'f': //hex digits
+      if(!hex_en)goto def;
+      //drop through
     case '0' ... '9':
       if(ex){
         if(exv*10+(key-'0')>=307)break;
@@ -97,7 +93,7 @@ void rpn::key_edit(char key)
           edln[edpos++]='1';
         }
         expos=edpos;
-        edln[edpos++]='e';
+        edln[edpos++]='E';
         PrDev->print('e');
       }
       ex=true;
@@ -142,6 +138,7 @@ xit:
       altFn^=alt_Shift;
       break;
     default: /* do other functions immediately */
+def:    
       altFn&=~alt_Edit;
       edln[edpos]='\0';
       stackx = strtof64(&edln[!neg], NULL);
