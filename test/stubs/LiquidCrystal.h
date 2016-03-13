@@ -8,6 +8,7 @@ class LiquidCrystal : public Print
     LiquidCrystal(){}
     void begin(int,int){}
     void clear(void){printf("\r\n");}
+    void home(void){printf("\r\n");}
     void setCursor(int,int){printf("\r\n");}
     void setPinMode(int){}
 };

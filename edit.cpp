@@ -41,7 +41,7 @@ void rpn::key_edit(char key)
     altFn |= alt_Edit;
     edln[0]='-'; //it is easier to insert the sign first and remove it later
     for(int8_t i=1;i<18;i++)edln[i]=0;
-    PrDev->lcdclear(0);
+    if(!(altFn&alt_Fix))PrDev->lcdclear(0);
     edpos=1;
     point=neg=false;
     exv=0;
@@ -61,7 +61,9 @@ void rpn::key_edit(char key)
       }
       edln[edpos++]=key;
       PrDev->print(key);
-      if( (altFn&alt_Fix) && ((edpos>2) || (key>'1')) )goto xit;
+      if( (altFn&alt_Fix) && ((edpos>2) || (key>'1')) ){
+        goto xit;
+      }
       break;
     case '_': //sign
       if(ex){
@@ -125,8 +127,7 @@ xit:
       edln[edpos]='\0';
       result = strtof64(&edln[!neg], NULL);
       if(altFn&alt_Fix){
-        //printf("Fix:%d\n",result.ipart());
-        stackx.setDecs(result.ipart());
+        lastx.setDecs(result.ipart());
       }
       else stackx=result;
       altFn=alt_Norm;
@@ -136,13 +137,15 @@ xit:
       break;
     case '?': //shift
       altFn^=alt_Shift;
+      show_flags();
+      PrDev->setCursor(neg+edpos,1);
       break;
     default: /* do other functions immediately */
 def:    
       altFn&=~alt_Edit;
       edln[edpos]='\0';
       stackx = strtof64(&edln[!neg], NULL);
-      key_norm(key);
+      key_input(key,'.');
       break;
   }
 }

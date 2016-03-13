@@ -14,7 +14,7 @@ display lcd;
 
 rpn sysrpn;
 
-const int8_t rpin[]={10,11,12,13,14,15,16};
+const int8_t rpin[7]={2,3,A0,A1,A2,A3,A4};
 
 char keyval[]="\
 abcde\
@@ -110,7 +110,7 @@ int8_t getKey(void)
 
 void loop(void)
 {
-  char kv=NO_KEY, kc;
+  char kv=NO_KEY, kc=0;
   char keypressed = getKey();
   if(keypressed > NO_KEY){
     kv = keyval[keypressed];

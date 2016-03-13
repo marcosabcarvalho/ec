@@ -19,25 +19,27 @@ void rpn::begin(display &dev)
 
 void rpn::key_input(char key,char ch)
 {
-  if(altFn&alt_Edit)key_edit(key);
-  else key_norm(key,ch);
+  if(altFn&alt_Bri){
+    altFn = alt_Norm;
+    analogWrite(pin_BL, ((key-'0')%10*16+8));
+    show_stack();
+  }
+  else if(altFn&(alt_Sto|alt_Rcl)){
+    if(key!='.'){
+      if(altFn&(alt_Sto))sto(ch);
+      else rcl(ch);
+    }
+    PrDev->lcdprint(stackx.toString());
+    altFn&=~(alt_Sto|alt_Rcl);
+  }
+  else if((altFn&alt_Edit))key_edit(key);
+  else if(altFn&alt_Shift)key_shift(key);
+  else key_norm(key);
 }
 
-void rpn::key_norm(char key){
-  key_norm(key,'.');
-}
-
-void rpn::key_norm(char key, char ch)
+void rpn::key_norm(char key)
 {
   f64 undo_lx=lastx;
-  if(altFn&alt_Shift)key_shift(key);
-  else if(altFn&alt_Sto)sto(ch);
-  else if(altFn&alt_Rcl)rcl(ch);
-  else if(altFn&alt_Bri){
-    altFn&=~alt_Bri;
-    analogWrite(pin_BL, ((key-'0')%10)*25);
-  }
-  else{
     if(key!='?' && !(altFn&alt_Sto)){
       busy();
       lastx = stackx;
@@ -46,7 +48,7 @@ void rpn::key_norm(char key, char ch)
     case 'E'://exp
     case '.':
     case '0' ... '9':
-      if(push_en && !(altFn&alt_Fix))stack_push();
+      if(push_en && !(altFn&alt_Fix))stack_push(); //some things disable edit push
       PrDev->lcdprint(stacky.toString(),1);
       PrDev->lcdclear(0);
       key_edit(key);
@@ -109,20 +111,19 @@ void rpn::key_norm(char key, char ch)
       push_en=false;
       break;
     case '?':
-      altFn |= alt_Shift;
+      altFn ^= alt_Shift;
       lastx = undo_lx;
       break;
     case 'S':
-      PrDev->lcdprint("STO:_");
+      PrDev->lcdprint("STO");
       altFn |= alt_Sto;
       return;
     case 'R':
-      PrDev->lcdprint("RCL:_");
+      PrDev->lcdprint("RCL");
       altFn |= alt_Rcl;
       return;
     case '!':
       break;
-    case '\r':
     case '\n':
       stack_push();
       break;
@@ -135,8 +136,7 @@ void rpn::key_norm(char key, char ch)
       //PrDev->print(key);
       break;
     }
-  }
-  show_stack();
+    show_stack();
 }
 
 void rpn::key_shift(char key)
@@ -147,9 +147,6 @@ void rpn::key_shift(char key)
     lastx = stackx;
   }
   switch(key){
-    case '?': //unshift
-      altFn ^= alt_Shift;
-      return;
     case 'a':
       stack_push();
       stackx = lastx;
@@ -176,12 +173,12 @@ void rpn::key_shift(char key)
       stackx=stackx.intval();
       break;
     case '+':
-      PrDev->lcdprint("Fix:_");
+      PrDev->lcdprint("Fix:");
       altFn = alt_Fix;
       key_edit(0);
       return;
     case '!':
-      PrDev->lcdprint("BRI:_");
+      PrDev->lcdprint("BRI:");
       altFn |= alt_Bri;
       return;
       
@@ -251,6 +248,7 @@ void rpn::key_shift(char key)
       if(deg_en)todeg=f64(90)/f64( 0x3FF921FB, 0x54442D18);
       else todeg=1;
       break;
+#ifndef TEST_SMALL      
     case 'h':
       stackx=asin64(stackx)*todeg; //no hyp functions
       //stackx=altFn&alt_Hyp?asinh64(stackx):asin64(stackx)*todeg;
@@ -263,13 +261,15 @@ void rpn::key_shift(char key)
       stackx=atan64(stackx)*todeg;
       //stackx=altFn&alt_Hyp?atanh64(stackx):atan64(stackx)*todeg;
       break;
-    case '*':
-    case '-':
+#endif      
+    case '*': //ENG
+    case '-': //SCI
       break;
-    //case '+':
+    case '\n':
     case '0' ... '9':
+    case '?':
       key_norm(key);
-      break;      
+      return;
     case '/':
       stackx=stacky.ipart()%(long)(stack_pull()); //32-bit version saves ram
       break;
@@ -289,9 +289,19 @@ void rpn::key_shift(char key)
   show_stack();
 }
 
+void rpn::show_flags(void)
+{
+  PrDev->home();
+  PrDev->print(hex_en?'x':deg_en?' ':'r');
+  PrDev->setCursor(0,1);
+  PrDev->print(altFn&alt_Shift?'^':' ');
+}
+
 void rpn::show_stack(void)
 {
   int i,j;
+  if(altFn&alt_Edit)return;
+  show_flags();
   PrDev->lcdprint(stacky.toString(),1);
   PrDev->lcdprint(stackx.toString());
 #ifdef NOT_ARDUINO  
@@ -334,22 +344,12 @@ void rpn::busy(void)
 
 void rpn::sto(char key)
 {
-  if(key!='.'){
-    stovars[key-'a'] = stackx;
-    //PrDev->print(key);
-    //delay(200);
-  }
-  PrDev->lcdprint(stackx.toString());
-  altFn&=~alt_Sto;
+  stovars[key-'a'] = stackx;
 }
 
 void rpn::rcl(char key)
 {
-  if(key!='.'){
-    stack_push();
-    stackx = stovars[key-'a'];
-  }
-  PrDev->lcdprint(stackx.toString());
-  altFn&=~alt_Rcl;
+  stack_push();
+  stackx = stovars[key-'a'];
 }
 

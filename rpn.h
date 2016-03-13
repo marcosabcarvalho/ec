@@ -1,7 +1,9 @@
 #include <Math64.h>
 #include "display.h"
 
-#define STACK_DEPTH 5
+//#define TEST_SMALL //omit inverse trig to fit normal UNO for testing
+
+#define STACK_DEPTH 4
 #define STACK_TOP (STACK_DEPTH-1)
 #define stackx (stack[stack_index])
 #define stacky (stack[(stack_index+1)%STACK_DEPTH])
@@ -36,11 +38,11 @@ class rpn
   rpn(void);
   void key_input(char key, char ch);
   void show_stack(void);
+  void show_flags(void);
 
   private:
   void displayline(int n);
   void key_norm(char key);
-  void key_norm(char key,char ch);
   void key_edit(char key);
   void key_shift(char key);
   void stack_push(void);
