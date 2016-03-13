@@ -8,6 +8,7 @@ rpn::rpn(void)
   deg_en=true;
   hex_en=false;
   stack_index=0;
+  sci_en = false;
 }
 
 void rpn::begin(display &dev)
@@ -29,8 +30,8 @@ void rpn::key_input(char key,char ch)
       if(altFn&(alt_Sto))sto(ch);
       else rcl(ch);
     }
-    PrDev->lcdprint(stackx.toString());
     altFn&=~(alt_Sto|alt_Rcl);
+    show_stack();
   }
   else if((altFn&alt_Edit))key_edit(key);
   else if(altFn&alt_Shift)key_shift(key);
@@ -81,10 +82,10 @@ void rpn::key_norm(char key)
       stackx=log64(stackx)/log64(10);
       break;
     case 'f':
-      stack_swapxy();
+      stack_pull();
       break;
     case 'g':
-      stack_pull();
+      stack_swapxy();
       break;
     case 'h':
       //altFn&=~alt_Hyp;
@@ -124,7 +125,7 @@ void rpn::key_norm(char key)
       return;
     case '!':
       break;
-    case '\n':
+    case CR:
       stack_push();
       break;
     case 'X':
@@ -133,7 +134,6 @@ void rpn::key_norm(char key)
       lastx.setBase(hex_en?16:10);
       break;
     default:
-      //PrDev->print(key);
       break;
     }
     show_stack();
@@ -264,8 +264,10 @@ void rpn::key_shift(char key)
 #endif      
     case '*': //ENG
     case '-': //SCI
+      sci_en ^= 1;
+      //lastx.setExpMax(sci_en?1:10);
       break;
-    case '\n':
+    case CR:
     case '0' ... '9':
     case '?':
       key_norm(key);
@@ -349,7 +351,8 @@ void rpn::sto(char key)
 
 void rpn::rcl(char key)
 {
-  stack_push();
+  if(push_en)stack_push();
+  push_en=true;
   stackx = stovars[key-'a'];
 }
 

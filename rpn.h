@@ -1,7 +1,7 @@
 #include <Math64.h>
 #include "display.h"
 
-//#define TEST_SMALL //omit inverse trig to fit normal UNO for testing
+#define TEST_SMALL //omit inverse trig to fit normal UNO for testing
 
 #define STACK_DEPTH 4
 #define STACK_TOP (STACK_DEPTH-1)
@@ -20,6 +20,12 @@
 #define  alt_Fix 64
 #define  alt_Bri 128
 
+#ifdef NOT_ARDUINO
+#define CR '\n'
+#else
+#define CR '\r'
+#endif
+
 class rpn
 {
   display *PrDev;
@@ -32,6 +38,7 @@ class rpn
   f64 todeg;
   bool deg_en;
   bool hex_en;
+  bool sci_en;
 
   public:
   void begin(display &dev);

@@ -103,7 +103,7 @@ void rpn::key_edit(char key)
       sexp=false;
       break;
     case '\177': //pc raw backspace
-    case '\010': //backspace
+    case '\010': //terminal backspace
       edpos--;
       if(edln[edpos]=='.')point=false;
       if(edln[edpos]=='e'){
@@ -115,14 +115,14 @@ void rpn::key_edit(char key)
       if(edpos<2){ //exit edit mode
         altFn=alt_Norm;
         PrDev->lcdprint(stackx.toString());
+        stack_pull(); //okay, but destroys stack top
       }
       else{
         PrDev->lcdclear(0);
         PrDev->lcdprint(&edln[!neg]);
       }
       break;
-    //case '\r':
-    case '\n':
+    case CR:
 xit:
       edln[edpos]='\0';
       result = strtof64(&edln[!neg], NULL);

@@ -19,7 +19,7 @@ const int8_t rpin[7]={2,3,A0,A1,A2,A3,A4};
 char keyval[]="\
 abcde\
 fghij\
-\n\nPE\010\
+\r\rPE\010\
 ?789/\
 S456*\
 R123-\

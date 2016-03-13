@@ -33,7 +33,6 @@ int main(int argc, char *argv[])
     //if(ch_=='\n')putchar('\n');
     if(ch_=='Q')break;
   }
-
   tcsetattr( STDIN_FILENO, TCSANOW, &oldt);
   putchar('\n');
   return 0;
