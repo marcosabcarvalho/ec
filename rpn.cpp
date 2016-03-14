@@ -1,5 +1,7 @@
 #include "rpn.h"
 
+extern int sleep_req;
+
 rpn::rpn(void)
 {
   altFn = alt_Norm;
@@ -9,6 +11,8 @@ rpn::rpn(void)
   hex_en=false;
   stack_index=0;
   sci_en = false;
+  power_en = true;
+  bri=100;
 }
 
 void rpn::begin(display &dev)
@@ -22,7 +26,8 @@ void rpn::key_input(char key,char ch)
 {
   if(altFn&alt_Bri){
     altFn = alt_Norm;
-    analogWrite(pin_BL, ((key-'0')%10*16+8));
+    bri=((key-'0')%10*16+8);
+    analogWrite(pin_BL, bri);
     show_stack();
   }
   else if(altFn&(alt_Sto|alt_Rcl)){
@@ -124,6 +129,20 @@ void rpn::key_norm(char key)
       altFn |= alt_Rcl;
       return;
     case '!':
+      sleep_req^=1;
+      if(!sleep_req){
+        PrDev->command(LCD_DISPLAYCONTROL|LCD_DISPLAYON);
+        analogWrite(10,bri);
+        break;
+      }
+/*    
+      power_en ^= 1;
+      if(power_en){
+      }
+      else{
+      }
+*/      
+      return;
       break;
     case CR:
       stack_push();
@@ -263,9 +282,14 @@ void rpn::key_shift(char key)
       break;
 #endif      
     case '*': //ENG
+      eng_en ^= 1;
+      sci_en = 0;
+      goto expo;
     case '-': //SCI
       sci_en ^= 1;
-      //lastx.setExpMax(sci_en?1:10);
+      eng_en = 0;
+expo:      
+      lastx.setExpMax(sci_en|eng_en?0:10,eng_en);
       break;
     case CR:
     case '0' ... '9':

@@ -1,7 +1,9 @@
-
 #include <Arduino.h>
 #include <Float64.h>
 #include <Math64.h>
+#if defined(ARDUINO)
+#include <avr/sleep.h>
+#endif
 
 #include "softkey.h"
 #include "display.h"
@@ -13,10 +15,11 @@ display lcd;
 //const byte pin_BL=10;
 
 rpn sysrpn;
+//Sleep sleep;
 
 const int8_t rpin[7]={2,3,A0,A1,A2,A3,A4};
 
-char keyval[]="\
+static const char keyval[]="\
 abcde\
 fghij\
 \r\rPE\010\
@@ -25,7 +28,7 @@ S456*\
 R123-\
 !0.X+";
 
-char keychar[]="\
+static const char keychar[]="\
 abcde\
 fghij\
 .....\
@@ -34,9 +37,14 @@ fghij\
 .stuv\
 .wxyz";
 
+int sleep_req=0;
+void gosleep();
+
 void setup (void)
 {
+#ifdef TEST_SMALL  
   Serial.begin (115200);
+#endif  
   lcd.clear();
   sysrpn.begin(lcd);
 
@@ -116,12 +124,20 @@ void loop(void)
     kv = keyval[keypressed];
     kc = keychar[keypressed];
   }
+#ifdef TEST_SMALL
   else{
     kv = kc = skey.getKey();
   }
+#endif  
   if (kv != NO_KEY){
-    //Serial.println(keypressed);
     sysrpn.key_input(kv,kc);
+  }
+  if(sleep_req){
+    lcd.command(LCD_DISPLAYCONTROL|LCD_DISPLAYOFF);
+    analogWrite(10,0);
+    gosleep();
+    delay(100);
+    sysrpn.key_input('!','.'); // complete the wake up
   }
 }
 
@@ -136,4 +152,32 @@ int freeRam () {
 }
 */
 
+void wake(void){}
+
+void gosleep()
+{
+#if defined(ARDUINO)  
+  set_sleep_mode(SLEEP_MODE_PWR_DOWN);
+  //attachInterrupt(digitalPinToInterrupt(2),wake,LOW);
+  cli();
+  ADCSRA &= ~(1<<ADEN);  // adc off
+  EICRA=0; //low level on pin 2
+  EIMSK=1; //enable INT0
+  DIDR0=0x3f; //disable digital input on ADC 0..5
+  DIDR1=0x03; //disable digital input on AIN0/1
+  sleep_enable();
+  sleep_bod_disable();
+  sei();
+  sleep_cpu();
+  sleep_disable();
+  DIDR0 = DIDR1 = 0; //reenable digital input
+#endif  
+}
+
+#if defined(ARDUINO)  
+ISR(INT0_vect)
+{
+  EIMSK=0; //disable INT0
+}
+#endif
 

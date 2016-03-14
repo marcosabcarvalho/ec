@@ -3,7 +3,7 @@
 
 #define TEST_SMALL //omit inverse trig to fit normal UNO for testing
 
-#define STACK_DEPTH 4
+#define STACK_DEPTH 6
 #define STACK_TOP (STACK_DEPTH-1)
 #define stackx (stack[stack_index])
 #define stacky (stack[(stack_index+1)%STACK_DEPTH])
@@ -20,7 +20,7 @@
 #define  alt_Fix 64
 #define  alt_Bri 128
 
-#ifdef NOT_ARDUINO
+#if !defined(ARDUINO)
 #define CR '\n'
 #else
 #define CR '\r'
@@ -29,6 +29,7 @@
 class rpn
 {
   display *PrDev;
+  int bri;
   f64 stack[STACK_DEPTH];
   f64 lastx;
   uint8_t stack_index;
@@ -39,6 +40,8 @@ class rpn
   bool deg_en;
   bool hex_en;
   bool sci_en;
+  bool eng_en;
+  bool power_en;
 
   public:
   void begin(display &dev);
