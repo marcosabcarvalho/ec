@@ -1,3 +1,4 @@
+#include "ec_conf.h"
 #include "rpn.h"
 
 extern int sleep_req;
@@ -330,7 +331,7 @@ void rpn::show_stack(void)
   show_flags();
   PrDev->lcdprint(stacky.toString(),1);
   PrDev->lcdprint(stackx.toString());
-#ifdef NOT_ARDUINO  
+#if !defined(ARDUINO)
   Serial.println();
   Serial.println("----------------");
   for(i=0,j=stack_index+STACK_TOP;i<STACK_DEPTH;i++,j--){

@@ -1,17 +1,12 @@
 #include <Arduino.h>
-#ifndef NOT_ARDUINO
+#if defined(ARDUINO)
 #include "LiquidCrystal.h"
 
 #include <stdio.h>
 #include <string.h>
 #include <inttypes.h>
+#include "ec_conf.h"
 
-#define rs 8
-#define enable 9
-#define d0 4
-#define d1 5
-#define d2 6
-#define d3 7
 
 
 // When the display powers up, it is configured as follows:
@@ -63,14 +58,14 @@ LiquidCrystal::LiquidCrystal(void)//uint8_t rs,  uint8_t enable, uint8_t d0, uin
 //			 uint8_t d0, uint8_t d1, uint8_t d2, uint8_t d3,
 //			 uint8_t d4, uint8_t d5, uint8_t d6, uint8_t d7)
 {
-  _rs_pin = rs;
+  _rs_pin = LCD_RS;
   //_rw_pin = rw;
-  _enable_pin = enable;
+  _enable_pin = LCD_EN;
   
-  _data_pins[0] = d0;
-  _data_pins[1] = d1;
-  _data_pins[2] = d2;
-  _data_pins[3] = d3; 
+  _data_pins[0] = LCD_D0;
+  _data_pins[1] = LCD_D1;
+  _data_pins[2] = LCD_D2;
+  _data_pins[3] = LCD_D3;
   //_data_pins[4] = d4;
   //_data_pins[5] = d5;
   //_data_pins[6] = d6;

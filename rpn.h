@@ -1,8 +1,6 @@
 #include <Math64.h>
 #include "display.h"
 
-#define TEST_SMALL //omit inverse trig to fit normal UNO for testing
-
 #define STACK_DEPTH 6
 #define STACK_TOP (STACK_DEPTH-1)
 #define stackx (stack[stack_index])

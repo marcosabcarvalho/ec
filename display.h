@@ -2,10 +2,10 @@
 #define _display_h_
 
 #include <Arduino.h>
-#ifdef NOT_ARDUINO
-#include <LiquidCrystal.h>
-#else
+#if defined(ARDUINO)
 #include "LiquidCrystal.h"
+#else
+#include <LiquidCrystal.h>
 #endif
 
 #define LCD_LEFT 1

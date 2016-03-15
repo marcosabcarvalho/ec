@@ -1,4 +1,5 @@
 #include <Arduino.h>
+#include "ec_conf.h"
 #include <Float64.h>
 #include <Math64.h>
 #if defined(ARDUINO)
@@ -17,7 +18,8 @@ display lcd;
 rpn sysrpn;
 //Sleep sleep;
 
-const int8_t rpin[7]={2,3,A0,A1,A2,A3,A4};
+const int8_t rpin[7]={KEY_R0, KEY_R1, KEY_R2, KEY_R3, KEY_R4, KEY_R5, KEY_R6};
+const int8_t cpin[]={KEY_C0,KEY_C1,KEY_C2,KEY_C3,KEY_C4};
 
 static const char keyval[]="\
 abcde\
@@ -88,32 +90,33 @@ void setup (void)
 
 int8_t scankeys(void)
 {
-  const int8_t cpin[]={4,5,6,7,8}; //shared with lcd
-  int8_t i,r,c;
+  int8_t r,c;
   bool keydown=false;
   int8_t key=NO_KEY;
 
   lcd.setPinMode(INPUT);
+  delay(10);
   for(c=0;c<5;c++){
     pinMode(cpin[c],OUTPUT);
     digitalWrite(cpin[c],LOW);
     for(r=0;r<7;r++){
       if(digitalRead(rpin[r]) == LOW){
         keydown=true;
-        key=c*5+r;
-        break;
+        key=c+r*5;
+        goto xit; //return first key found
       }
     }
     pinMode(cpin[c],INPUT); //high Z
   }
+xit:
   lcd.setPinMode(OUTPUT);//for lcd
   return key;
 }
 
 int8_t getKey(void)
 {
-  while(scankeys()>=0)delay(10); //wait for release
-  return scankeys();
+  while(scankeys()>=0); //wait for release
+  return scankeys(); //return next press
 }
 
 void loop(void)
@@ -135,6 +138,7 @@ void loop(void)
   if(sleep_req){
     lcd.command(LCD_DISPLAYCONTROL|LCD_DISPLAYOFF);
     analogWrite(10,0);
+    while(!digitalRead(rpin[6]))delay(100); //wait for key release
     gosleep();
     delay(100);
     sysrpn.key_input('!','.'); // complete the wake up

@@ -4,7 +4,7 @@
 #include <stdint.h>
 #include <unistd.h>
 
-#define NOT_ARDUINO
+//#define NOT_ARDUINO
 
 #define INPUT 1
 #define OUTPUT 0
