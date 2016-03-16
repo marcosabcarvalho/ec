@@ -1,4 +1,4 @@
-#define TEST_SMALL //omit inverse trig to fit normal UNO for testing
+//#define TEST_SMALL //omit inverse trig to fit normal UNO for testing
 
 //LCD pins
 #define LCD_D0 4

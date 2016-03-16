@@ -44,7 +44,7 @@ void gosleep();
 
 void setup (void)
 {
-#ifdef TEST_SMALL  
+#if defined(TEST_SMALL) || !defined(ARDUINO) //need serial port for testing
   Serial.begin (115200);
 #endif  
   lcd.clear();
@@ -127,7 +127,7 @@ void loop(void)
     kv = keyval[keypressed];
     kc = keychar[keypressed];
   }
-#ifdef TEST_SMALL
+#if defined(TEST_SMALL) || !defined(ARDUINO)
   else{
     kv = kc = skey.getKey();
   }
@@ -156,11 +156,9 @@ int freeRam () {
 }
 */
 
-void wake(void){}
-
+#if defined(ARDUINO)  
 void gosleep()
 {
-#if defined(ARDUINO)  
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   //attachInterrupt(digitalPinToInterrupt(2),wake,LOW);
   cli();
@@ -175,13 +173,13 @@ void gosleep()
   sleep_cpu();
   sleep_disable();
   DIDR0 = DIDR1 = 0; //reenable digital input
-#endif  
 }
 
-#if defined(ARDUINO)  
 ISR(INT0_vect)
 {
   EIMSK=0; //disable INT0
 }
+#else
+void gosleep(){}
 #endif
 

@@ -47,116 +47,117 @@ void rpn::key_input(char key,char ch)
 void rpn::key_norm(char key)
 {
   f64 undo_lx=lastx;
-    if(key!='?' && !(altFn&alt_Sto)){
-      busy();
-      lastx = stackx;
-    }
-    switch(key){
-    case 'E'://exp
-    case '.':
-    case '0' ... '9':
-      if(push_en && !(altFn&alt_Fix))stack_push(); //some things disable edit push
-      PrDev->lcdprint(stacky.toString(),1);
-      PrDev->lcdclear(0);
-      key_edit(key);
-      return;
-    case '+':
-      stackx+=stack_pull();
-      break;
-    case '-':
-      stackx-=stack_pull();
-      break;
-    case '*':
-      stackx*=stack_pull();
-      break;
-    case '/':
-      stackx/=stack_pull();
-      break;
-    case 'a':
-      stackx=f64(1)/stackx;
-      break;
-    case 'b':
-      stackx=sqrt64(stackx);
-      break;
-    case 'c':
-      stackx=exp64(stack_pull() * log64(stacky));
-      break;
-    case 'd':
-      stackx=log64(stackx);
-      break;
-    case 'e':
-      stackx=log64(stackx)/log64(10);
-      break;
-    case 'f':
-      stack_pull();
-      break;
-    case 'g':
-      stack_swapxy();
-      break;
-    case 'h':
-      //altFn&=~alt_Hyp;
-      //stackx=altFn&alt_Hyp?sinh64(stackx):sin64(stackx/todeg);
-      stackx=sin64(stackx/todeg);
-      break;
-    case 'i':
-      //altFn&=~alt_Hyp;
-      //stackx=altFn&alt_Hyp?cosh64(stackx):cos64(stackx/todeg);
-      stackx=cos64(stackx/todeg);
-      break;
-    case 'j':
-      //altFn&=~alt_Hyp;
-      //stackx=altFn&alt_Hyp?tanh64(stackx):tan64(stackx/todeg);
-      stackx=tan64(stackx/todeg);
-      break;
-    case '_':
-      stackx=-stackx;
-      break;
-    case '\177': //pc raw backspace
-    case '\010': //backspace
-    case '\\':
-      stackx = 0;
-      push_en=false;
-      break;
-    case '?':
-      altFn ^= alt_Shift;
-      lastx = undo_lx;
-      break;
-    case 'S':
-      PrDev->lcdprint("STO");
-      altFn |= alt_Sto;
-      return;
-    case 'R':
-      PrDev->lcdprint("RCL");
-      altFn |= alt_Rcl;
-      return;
-    case '!':
-      sleep_req^=1;
-      if(!sleep_req){
-        PrDev->command(LCD_DISPLAYCONTROL|LCD_DISPLAYON);
-        analogWrite(10,bri);
-        break;
-      }
-/*    
-      power_en ^= 1;
-      if(power_en){
-      }
-      else{
-      }
-*/      
-      return;
-      break;
-    case CR:
-      stack_push();
-      break;
-    case 'X':
-      lastx = undo_lx;
-      hex_en ^= 1;
-      lastx.setBase(hex_en?16:10);
-      break;
-    default:
+  if(key!='?' && !(altFn&alt_Sto)){
+    busy();
+    lastx = stackx;
+  }
+  switch(key){
+  case 'E'://exp
+  case '.':
+  case '0' ... '9':
+    if(push_en && !(altFn&alt_Fix))stack_push(); //some things disable edit push
+    PrDev->lcdprint(stacky.toString(),1);
+    PrDev->lcdclear(0);
+    key_edit(key);
+    return;
+  case '+':
+    stackx+=stack_pull();
+    break;
+  case '-':
+    stackx-=stack_pull();
+    break;
+  case '*':
+    stackx*=stack_pull();
+    break;
+  case '/':
+    stackx/=stack_pull();
+    break;
+  case 'a':
+    stackx=f64(1)/stackx;
+    break;
+  case 'b':
+    stackx=sqrt64(stackx);
+    break;
+  case 'c':
+    if(!stackx.isZero() && stacky.isZero())stackx=0;
+    else stackx=exp64(stack_pull() * log64(stacky));
+    break;
+  case 'd':
+    stackx=log64(stackx);
+    break;
+  case 'e':
+    stackx=log64(stackx)/log64(f64(10));
+    break;
+  case 'f':
+    stack_pull();
+    break;
+  case 'g':
+    stack_swapxy();
+    break;
+  case 'h':
+    //altFn&=~alt_Hyp;
+    //stackx=altFn&alt_Hyp?sinh64(stackx):sin64(stackx/todeg);
+    stackx=sin64(stackx/todeg);
+    break;
+  case 'i':
+    //altFn&=~alt_Hyp;
+    //stackx=altFn&alt_Hyp?cosh64(stackx):cos64(stackx/todeg);
+    stackx=cos64(stackx/todeg);
+    break;
+  case 'j':
+    //altFn&=~alt_Hyp;
+    //stackx=altFn&alt_Hyp?tanh64(stackx):tan64(stackx/todeg);
+    stackx=tan64(stackx/todeg);
+    break;
+  case '_':
+    stackx=-stackx;
+    break;
+  case '\177': //pc raw backspace
+  case '\010': //backspace
+  case '\\':
+    stackx = 0;
+    push_en=false;
+    break;
+  case '?':
+    altFn ^= alt_Shift;
+    lastx = undo_lx;
+    break;
+  case 'S':
+    PrDev->lcdprint("STO");
+    altFn |= alt_Sto;
+    return;
+  case 'R':
+    PrDev->lcdprint("RCL");
+    altFn |= alt_Rcl;
+    return;
+  case '!':
+    sleep_req^=1;
+    if(!sleep_req){
+      PrDev->command(LCD_DISPLAYCONTROL|LCD_DISPLAYON);
+      analogWrite(10,bri);
       break;
     }
-    show_stack();
+    /*    
+	  power_en ^= 1;
+	  if(power_en){
+	  }
+	  else{
+	  }
+    */      
+    return;
+    break;
+  case CR:
+    stack_push();
+    break;
+  case 'X':
+    lastx = undo_lx;
+    hex_en ^= 1;
+    lastx.setBase(hex_en?16:10);
+    break;
+  default:
+    break;
+  }
+  show_stack();
 }
 
 void rpn::key_shift(char key)
@@ -181,7 +182,7 @@ void rpn::key_shift(char key)
       stackx=exp64(stackx);
       break;
     case 'e':
-      stackx=stack_pull()*log64(10);
+      stackx=exp64(stack_pull()*log64(10));
       break;
     case 'f':
       stack_push();
@@ -298,7 +299,7 @@ expo:
       key_norm(key);
       return;
     case '/':
-      stackx=stacky.ipart()%(long)(stack_pull()); //32-bit version saves ram
+      stackx=int32_t(stacky.ipart()%stack_pull().ipart()); //integer version saves ram
       break;
 /*      
     case 'B':
