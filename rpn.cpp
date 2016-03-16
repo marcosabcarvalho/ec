@@ -79,7 +79,10 @@ void rpn::key_norm(char key)
     stackx=sqrt64(stackx);
     break;
   case 'c':
-    if(!stackx.isZero() && stacky.isZero())stackx=0;
+    if(!stackx.isZero() && stacky.isZero()){
+      stack_pull();
+      stackx=0;
+    }
     else stackx=exp64(stack_pull() * log64(stacky));
     break;
   case 'd':
