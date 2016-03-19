@@ -24,7 +24,7 @@ const int8_t cpin[]={KEY_C0,KEY_C1,KEY_C2,KEY_C3,KEY_C4};
 static const char keyval[]="\
 abcde\
 fghij\
-\r\rPE\010\
+\r\r_E\010\
 ?789/\
 S456*\
 R123-\
@@ -94,35 +94,53 @@ int8_t scankeys(void)
   bool keydown=false;
   int8_t key=NO_KEY;
 
-  lcd.setPinMode(INPUT);
-  delay(10);
+  //lcd.setPinMode(INPUT); //columns go high Z
+  //delay(10);
   for(c=0;c<5;c++){
-    pinMode(cpin[c],OUTPUT);
-    digitalWrite(cpin[c],LOW);
+    digitalWrite(cpin[c],HIGH);
+  }
+  for(c=0;c<5;c++){
+    //pinMode(cpin[c],OUTPUT);
+    digitalWrite(cpin[c],LOW); //drive columns low one at a time
     for(r=0;r<7;r++){
-      if(digitalRead(rpin[r]) == LOW){
+      if(digitalRead(rpin[r]) == LOW){ //scan rows
         keydown=true;
         key=c+r*5;
         goto xit; //return first key found
       }
     }
-    pinMode(cpin[c],INPUT); //high Z
+    //pinMode(cpin[c],INPUT); //high Z
+    digitalWrite(cpin[c],HIGH);
   }
 xit:
-  lcd.setPinMode(OUTPUT);//for lcd
+  //lcd.setPinMode(OUTPUT);//for lcd
   return key;
+}
+
+//stop scanning while waiting for key release
+void waitRelease(int key)
+{
+  int c=key%5;
+  int r=key/5;
+  if(key<0)return;
+  for(int i=0;i<5;i++){
+    digitalWrite(cpin[i],i==c?LOW:HIGH);
+  }
+  while(digitalRead(rpin[r])==LOW)delay(10);
 }
 
 int8_t getKey(void)
 {
-  while(scankeys()>=0); //wait for release
+  //delay(10);
+  //while(scankeys()!=NO_KEY); //wait for release
+  //delay(10);
   return scankeys(); //return next press
 }
 
 void loop(void)
 {
   char kv=NO_KEY, kc=0;
-  char keypressed = getKey();
+  int8_t keypressed = getKey();
   if(keypressed > NO_KEY){
     kv = keyval[keypressed];
     kc = keychar[keypressed];
@@ -143,6 +161,8 @@ void loop(void)
     delay(100);
     sysrpn.key_input('!','.'); // complete the wake up
   }
+  waitRelease(keypressed);
+  //while(scankeys()!=NO_KEY); //this doesn't work well
 }
 
 /*
@@ -159,8 +179,10 @@ int freeRam () {
 #if defined(ARDUINO)  
 void gosleep()
 {
+  for(int i=0;i<5;i++){
+    digitalWrite(cpin[i],i?HIGH:LOW);
+  }
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
-  //attachInterrupt(digitalPinToInterrupt(2),wake,LOW);
   cli();
   ADCSRA &= ~(1<<ADEN);  // adc off
   EICRA=0; //low level on pin 2

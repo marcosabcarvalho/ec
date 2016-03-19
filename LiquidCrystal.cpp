@@ -61,6 +61,7 @@ LiquidCrystal::LiquidCrystal(void)//uint8_t rs,  uint8_t enable, uint8_t d0, uin
   _rs_pin = LCD_RS;
   //_rw_pin = rw;
   _enable_pin = LCD_EN;
+  ioEn=false;
   
   _data_pins[0] = LCD_D0;
   _data_pins[1] = LCD_D1;

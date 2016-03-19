@@ -91,6 +91,7 @@ private:
   void write4bits(uint8_t);
   void write8bits(uint8_t);
   void pulseEnable();
+  bool ioEn;
 
   uint8_t _rs_pin; // LOW: command.  HIGH: character.
   uint8_t _rw_pin; // LOW: write to LCD.  HIGH: read from LCD.
