@@ -120,9 +120,10 @@ void rpn::key_edit(char key)
       exv=exv/10;
       edln[edpos]='\0';
       if(edpos<2){ //exit edit mode
-        altFn=alt_Norm;
-        PrDev->lcdprint(stackx.toString());
+//        altFn=alt_Norm;
+//        PrDev->lcdprint(stackx.toString());
         stack_pull(); //okay, but destroys stack top
+        goto out;
       }
       else{
         PrDev->lcdclear(0);
@@ -143,6 +144,7 @@ xit:
         lastx.setDecs(result.ipart());
       }
       else stackx=result;
+out:      
       altFn=alt_Norm;
       push_en=true;
       show_stack();
@@ -154,9 +156,8 @@ xit:
       PrDev->setCursor(neg+edpos,1);
       break;
     case '!':
-      altFn=alt_Norm;
       stack_pull();
-      show_stack();
+      goto out;
       break;
     default: /* do other functions immediately */
 def:    

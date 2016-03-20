@@ -40,8 +40,12 @@ void rpn::key_input(char key,char ch)
     show_stack();
   }
   else if((altFn&alt_Edit))key_edit(key);
-  else if(altFn&alt_Shift)key_shift(key);
-  else key_norm(key);
+  else{
+    PrDev->noCursor();
+    PrDev->noBlink();
+    if(altFn&alt_Shift)key_shift(key);
+    else key_norm(key);
+  }
 }
 
 void rpn::key_norm(char key)
