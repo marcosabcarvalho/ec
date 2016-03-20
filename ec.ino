@@ -39,6 +39,8 @@ fghij\
 .stuv\
 .wxyz";
 
+int16_t sleeptimer=0;
+
 int sleep_req=0;
 void gosleep();
 
@@ -132,39 +134,36 @@ void waitRelease(int key)
   while(digitalRead(rpin[r])==LOW)delay(10);
 }
 
-int8_t getKey(void)
-{
-  //delay(10);
-  //while(scankeys()!=NO_KEY); //wait for release
-  //delay(10);
-  return scankeys(); //return next press
-}
-
 void loop(void)
 {
   char kv=NO_KEY, kc=0;
-  int8_t keypressed = getKey();
+  int8_t keypressed = scankeys();
+  
   if(keypressed > NO_KEY){
     kv = keyval[keypressed];
     kc = keychar[keypressed];
+    sleeptimer=0;
   }
 #if defined(TEST_SMALL) || !defined(ARDUINO)
   else{
-    kv = kc = skey.getKey();
+    kv = kc = skey.getKey(); //use serial port if no hardware keyboard is available
   }
 #endif  
   if (kv != NO_KEY){
     sysrpn.key_input(kv,kc);
   }
-  if(sleep_req){
+  if(sleep_req || sleeptimer>600){
     lcd.command(LCD_DISPLAYCONTROL|LCD_DISPLAYOFF);
     analogWrite(10,0);
     while(!digitalRead(rpin[6]))delay(100); //wait for key release
     gosleep();
     delay(100);
+    sleeptimer=0;
     sysrpn.key_input('!','.'); // complete the wake up
   }
   waitRelease(keypressed);
+  sleeptimer++;
+  delay(50);
   //while(scankeys()!=NO_KEY); //this doesn't work well
 }
 
