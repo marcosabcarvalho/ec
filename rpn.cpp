@@ -32,7 +32,7 @@ void rpn::key_input(char key,char ch)
     show_stack();
   }
   else if(altFn&(alt_Sto|alt_Rcl)){
-    if(key!='S'){
+    if(ch!='.'){
       if(altFn&(alt_Sto))sto(ch);
       else rcl(ch);
     }
