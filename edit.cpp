@@ -42,7 +42,10 @@ void rpn::key_edit(char key)
     altFn |= alt_Edit;
     edln[0]='-'; //it is easier to insert the sign first and remove it later
     for(int8_t i=1;i<18;i++)edln[i]=0;
-    if(!(altFn&alt_Fix))PrDev->lcdclear(0);
+    if(!(altFn&alt_Fix)){
+      PrDev->lcdclear(0);
+      show_flags();
+    }
     edpos=1;
     point=neg=false;
     exv=0;
@@ -125,6 +128,12 @@ void rpn::key_edit(char key)
         PrDev->lcdclear(0);
         PrDev->lcdprint(&edln[!neg]);
       }
+      break;
+    case 'X': //toggle hex mode
+      hex_en ^= 1;
+      lastx.setBase(hex_en?16:10);
+      show_flags();
+      PrDev->lcdprint(&edln[!neg]);
       break;
     case CR:
 xit:
