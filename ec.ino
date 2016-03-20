@@ -44,10 +44,12 @@ void gosleep();
 
 void setup (void)
 {
+  uint8_t eex_char[]={0,0xf,0x8,0xf,0x8,0xf,0,0};
 #if defined(TEST_SMALL) || !defined(ARDUINO) //need serial port for testing
   Serial.begin (115200);
 #endif  
   lcd.clear();
+  lcd.createChar(EXPCHAR,eex_char);
   sysrpn.begin(lcd);
 
   pinMode(pin_BL, OUTPUT);

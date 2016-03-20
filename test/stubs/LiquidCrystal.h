@@ -16,6 +16,7 @@ class LiquidCrystal : public Print
     void setCursor(int,int){printf("\r\n");}
     void setPinMode(int){}
     void command(int){}
+    void createChar(uint8_t, uint8_t*){}
 };
 
 #endif

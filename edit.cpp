@@ -1,3 +1,4 @@
+#include "ec_conf.h"
 #include "rpn.h"
 
 static void cdel(char *buf)
@@ -20,7 +21,7 @@ static void set_exp_sign(char *buf, bool neg)
 {
   int8_t n = 0;
   
-  while(buf[n] && buf[n]!='e')n++; // string MUST contain an 'e' 
+  while(buf[n] && buf[n]!=EXPCHAR)n++; // string MUST contain an EXPCHAR
   if(!buf[n])return;
   n++;
   if(neg && buf[n]=='-')return;
@@ -52,6 +53,7 @@ void rpn::key_edit(char key)
       return;
     case 'a' ... 'f': //hex digits
       if(!hex_en)goto def;
+      key+='A'-'a'; //substitute capital
       //drop through
     case '0' ... '9':
       if(ex){
@@ -95,8 +97,8 @@ void rpn::key_edit(char key)
           edln[edpos++]='1';
         }
         expos=edpos;
-        edln[edpos++]='E';
-        PrDev->print('e');
+        edln[edpos++]=EXPCHAR;
+        PrDev->print((char)EXPCHAR);
       }
       ex=true;
       exv=0;
