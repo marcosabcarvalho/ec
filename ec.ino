@@ -159,6 +159,7 @@ void loop(void)
     gosleep();
     delay(100);
     sleeptimer=0;
+    sleep_req=1;
     sysrpn.key_input('!','.'); // complete the wake up
   }
   waitRelease(keypressed);
