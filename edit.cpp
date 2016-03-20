@@ -47,6 +47,8 @@ void rpn::key_edit(char key)
     point=neg=false;
     exv=0;
     sexp=ex=false;
+    PrDev->cursor();
+    PrDev->blink();
   }
   switch(key){
     case 0: //dummy: do nothing

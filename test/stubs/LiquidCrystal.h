@@ -17,6 +17,10 @@ class LiquidCrystal : public Print
     void setPinMode(int){}
     void command(int){}
     void createChar(uint8_t, uint8_t*){}
+    void blink(){}
+    void noBlink(){}
+    void cursor(){}
+    void noCursor(){}
 };
 
 #endif

@@ -332,6 +332,8 @@ void rpn::show_stack(void)
 {
   int i,j;
   if(altFn&alt_Edit)return;
+  PrDev->noCursor();
+  PrDev->noBlink();
   show_flags();
   PrDev->lcdprint(stacky.toString(),1);
   PrDev->lcdprint(stackx.toString());

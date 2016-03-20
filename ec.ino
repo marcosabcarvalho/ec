@@ -50,6 +50,7 @@ void setup (void)
 #endif  
   lcd.clear();
   lcd.createChar(EXPCHAR,eex_char);
+  lcd.blink();
   sysrpn.begin(lcd);
 
   pinMode(pin_BL, OUTPUT);
