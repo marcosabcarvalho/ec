@@ -33,11 +33,11 @@ R123-\
 static const char keychar[]="\
 abcde\
 fghij\
-.....\
-.klmn\
-.opqr\
-.stuv\
-.wxyz";
+SSSSS\
+Sklmn\
+Sopqr\
+Sstuv\
+Swxyz";
 
 int16_t sleeptimer=0;
 

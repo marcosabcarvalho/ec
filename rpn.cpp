@@ -32,7 +32,7 @@ void rpn::key_input(char key,char ch)
     show_stack();
   }
   else if(altFn&(alt_Sto|alt_Rcl)){
-    if(key!='.'){
+    if(key!='S'){
       if(altFn&(alt_Sto))sto(ch);
       else rcl(ch);
     }
@@ -47,6 +47,7 @@ void rpn::key_input(char key,char ch)
 void rpn::key_norm(char key)
 {
   f64 undo_lx=lastx;
+  const f64 log10 = f64(0x40026bb1,0xbbb55515); //log_e(10)
   if(key!='?' && !(altFn&alt_Sto)){
     busy();
     lastx = stackx;
@@ -89,7 +90,7 @@ void rpn::key_norm(char key)
     stackx=log64(stackx);
     break;
   case 'e':
-    stackx=log64(stackx)/log64(f64(10));
+    stackx=log64(stackx)/log10;//log64(f64(10));
     break;
   case 'f':
     stack_pull();

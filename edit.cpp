@@ -153,6 +153,11 @@ xit:
       show_flags();
       PrDev->setCursor(neg+edpos,1);
       break;
+    case '!':
+      altFn=alt_Norm;
+      stack_pull();
+      show_stack();
+      break;
     default: /* do other functions immediately */
 def:    
       altFn&=~alt_Edit;
