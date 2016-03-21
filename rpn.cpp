@@ -1,7 +1,8 @@
 #include "ec_conf.h"
 #include "rpn.h"
 
-extern int sleep_req;
+extern bool sleep_req;
+extern bool stop_req;
 
 rpn::rpn(void)
 {
@@ -308,6 +309,9 @@ expo:
       return;
     case '/':
       stackx=int32_t(stacky.ipart()%stack_pull().ipart()); //integer version saves ram
+      break;
+    case '.':
+      stop_req=true;
       break;
 /*      
     case 'B':

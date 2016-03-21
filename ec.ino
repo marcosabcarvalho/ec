@@ -41,7 +41,8 @@ fghij\
 
 int16_t sleeptimer=0;
 
-int sleep_req=0;
+bool sleep_req=false;
+bool stop_req=false;
 void gosleep();
 
 void setup (void)
@@ -150,21 +151,27 @@ void loop(void)
   }
 #endif  
   if (kv != NO_KEY){
-    sysrpn.key_input(kv,kc);
+    if(stop_req)stop_req=false;
+    else sysrpn.key_input(kv,kc);
   }
-  if(sleep_req || sleeptimer>600){
+  else if(stop_req){
+    lcd.home();
+    lcd.print(f64(sleeptimer).toString());
+  }
+  if(!stop_req && (sleep_req || sleeptimer>300)){
     lcd.command(LCD_DISPLAYCONTROL|LCD_DISPLAYOFF);
     analogWrite(10,0);
     while(!digitalRead(rpin[6]))delay(100); //wait for key release
     gosleep();
     delay(100);
     sleeptimer=0;
+    //stop_req=false;
     sleep_req=1;
     sysrpn.key_input('!','.'); // complete the wake up
   }
   waitRelease(keypressed);
   sleeptimer++;
-  delay(50);
+  delay(100);
   //while(scankeys()!=NO_KEY); //this doesn't work well
 }
 
