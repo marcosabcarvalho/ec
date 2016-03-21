@@ -8,7 +8,7 @@ rpn::rpn(void)
 {
   altFn = alt_Norm;
   lastx=0;
-  push_en=true;
+  //push_en=true;
   deg_en=true;
   hex_en=false;
   stack_index=0;
@@ -61,7 +61,7 @@ void rpn::key_norm(char key)
   case 'E'://exp
   case '.':
   case '0' ... '9':
-    if(push_en && !(altFn&alt_Fix))stack_push(); //some things disable edit push
+    if(!(altFn&alt_noPush) && !(altFn&alt_Fix))stack_push(); //some things disable edit push
     PrDev->lcdprint(stacky.toString(),1);
     PrDev->lcdclear(0);
     key_edit(key);
@@ -125,7 +125,7 @@ void rpn::key_norm(char key)
   case '\010': //backspace
   case '\\':
     stackx = 0;
-    push_en=false;
+    altFn|=alt_noPush; //backspace disables push on next edit or rcl
     break;
   case '?':
     altFn ^= alt_Shift;
@@ -391,8 +391,8 @@ void rpn::sto(char key)
 
 void rpn::rcl(char key)
 {
-  if(push_en)stack_push();
-  push_en=true;
+  if(!(altFn&alt_noPush))stack_push();
+  altFn=alt_Norm;
   stackx = stovars[key-'a'];
 }
 

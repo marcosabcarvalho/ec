@@ -146,7 +146,7 @@ xit:
       else stackx=result;
 out:      
       altFn=alt_Norm;
-      push_en=true;
+      //push_en=true;
       show_stack();
       return;
       break;
@@ -161,10 +161,12 @@ out:
       break;
     default: /* do other functions immediately */
 def:    
-      altFn&=~alt_Edit;
+      altFn&=~alt_Edit; //don't do edit again
+      //push_en=true;
       edln[edpos]='\0';
       stackx = strtof64(&edln[!neg], NULL);
       key_input(key,'.');
+      altFn=alt_Norm; //return to normal
       break;
   }
 }
