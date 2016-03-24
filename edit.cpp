@@ -130,12 +130,14 @@ void rpn::key_edit(char key)
         PrDev->lcdprint(&edln[!neg]);
       }
       break;
+/*      
     case 'X': //toggle hex mode
       hex_en ^= 1;
       lastx.setBase(hex_en?16:10);
       show_flags();
       PrDev->lcdprint(&edln[!neg]);
       break;
+*/      
     case CR:
 xit:
       edln[edpos]='\0';

@@ -156,7 +156,8 @@ void loop(void)
   }
   else if(stop_req){
     lcd.home();
-    lcd.print(f64(sleeptimer).toString());
+    lcd.print(f64(f64(sleeptimer)/f64(10)).toString());
+    //lcd.print(f64(sleeptimer).toString());
   }
   if(!stop_req && (sleep_req || sleeptimer>300)){
     lcd.command(LCD_DISPLAYCONTROL|LCD_DISPLAYOFF);
