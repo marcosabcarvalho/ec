@@ -161,6 +161,8 @@ out:
       stack_pull();
       goto out;
       break;
+    case 'S':
+    case 'R':
     default: /* do other functions immediately */
 def:    
       altFn&=~alt_Edit; //don't do edit again
@@ -168,7 +170,7 @@ def:
       edln[edpos]='\0';
       stackx = strtof64(&edln[!neg], NULL);
       key_input(key,'.');
-      altFn=alt_Norm; //return to normal
+      //altFn=alt_Norm; //return to normal
       break;
   }
 }

@@ -44,6 +44,8 @@ class rpn
   void begin(display &dev);
   rpn(void);
   void key_input(char key, char ch);
+  void stack_push(void);
+  void set_x(f64 x){stackx = x;}
   void show_stack(void);
   void show_flags(void);
 
@@ -52,7 +54,6 @@ class rpn
   void key_norm(char key);
   void key_edit(char key);
   void key_shift(char key);
-  void stack_push(void);
   f64 stack_pull(void);
   void stack_swapxy(void);
   void busy(void);

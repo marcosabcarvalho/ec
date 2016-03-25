@@ -151,7 +151,11 @@ void loop(void)
   }
 #endif  
   if (kv != NO_KEY){
-    if(stop_req)stop_req=false;
+    if(stop_req){
+      stop_req=false;
+      //sysrpn.stack_push();
+      //sysrpn.set_x(f64(sleeptimer));
+    }
     else sysrpn.key_input(kv,kc);
   }
   else if(stop_req){
@@ -172,7 +176,7 @@ void loop(void)
   }
   waitRelease(keypressed);
   sleeptimer++;
-  delay(92);//approx 100ms loop
+  delay(91);//approx 100ms loop
   //while(scankeys()!=NO_KEY); //this doesn't work well
 }
 
