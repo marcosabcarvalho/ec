@@ -8,6 +8,8 @@
 #define LCD_RS 8
 #define LCD_EN 9
 
+#define BACKLIGHT_PIN 10
+
 //key columns (shared with LCD)
 #define KEY_C4 LCD_D0
 #define KEY_C3 LCD_D1

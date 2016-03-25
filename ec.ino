@@ -56,9 +56,9 @@ void setup (void)
   lcd.blink();
   sysrpn.begin(lcd);
 
-  pinMode(pin_BL, OUTPUT);
+  pinMode(BACKLIGHT_PIN, OUTPUT);
   //digitalWrite(pin_BL, HIGH);
-  analogWrite(pin_BL, 100);
+  analogWrite(BACKLIGHT_PIN, 100);
 
   for(int i=0;i<7;i++){
     pinMode(rpin[i], INPUT_PULLUP);
@@ -161,7 +161,7 @@ void loop(void)
   }
   if(!stop_req && (sleep_req || sleeptimer>300)){
     lcd.command(LCD_DISPLAYCONTROL|LCD_DISPLAYOFF);
-    analogWrite(10,0);
+    analogWrite(BACKLIGHT_PIN,0);
     while(!digitalRead(rpin[6]))delay(100); //wait for key release
     gosleep();
     delay(100);
@@ -172,7 +172,7 @@ void loop(void)
   }
   waitRelease(keypressed);
   sleeptimer++;
-  delay(100);
+  delay(92);//approx 100ms loop
   //while(scankeys()!=NO_KEY); //this doesn't work well
 }
 

@@ -9,7 +9,6 @@
 #endif
 
 #define LCD_LEFT 1
-#define pin_BL 10
 
 class display : public LiquidCrystal
 {

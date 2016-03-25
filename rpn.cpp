@@ -29,7 +29,7 @@ void rpn::key_input(char key,char ch)
   if(altFn&alt_Bri){
     altFn = alt_Norm;
     bri=((key-'0')%10*16+8);
-    analogWrite(pin_BL, bri);
+    analogWrite(BACKLIGHT_PIN, bri);
     show_stack();
   }
   else if(altFn&(alt_Sto|alt_Rcl)){
@@ -300,7 +300,7 @@ void rpn::key_shift(char key)
       sci_en ^= 1;
       eng_en = 0;
 expo:      
-      lastx.setExpMax(sci_en|eng_en?0:10,eng_en);
+      lastx.setExpMax(sci_en|eng_en?0:14,eng_en);
       break;
     case CR:
     case '0' ... '9':
