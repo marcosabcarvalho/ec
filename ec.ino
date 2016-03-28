@@ -66,6 +66,7 @@ void setup (void)
   delay(100);
   scankeys();  //prevent spurious startup keys
   waitRelease(30); //ensure ON/OFF button is released
+  sleeptimer=0;
 /*
   lcd.print("Hello world!");
   Serial.print("Math64::pi = ");
