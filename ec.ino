@@ -121,7 +121,6 @@ int8_t scankeys(void)
     digitalWrite(cpin[c],HIGH);
   }
 xit:
-  sleeptimer=0;
   //lcd.setPinMode(OUTPUT);//for lcd
   return key;
 }
