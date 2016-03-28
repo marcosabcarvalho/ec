@@ -63,7 +63,9 @@ void setup (void)
   for(int i=0;i<7;i++){
     pinMode(rpin[i], INPUT_PULLUP);
   }
-  
+  delay(100);
+  scankeys();  //prevent spurious startup keys
+  waitRelease(30); //ensure ON/OFF button is released
 /*
   lcd.print("Hello world!");
   Serial.print("Math64::pi = ");
@@ -119,6 +121,7 @@ int8_t scankeys(void)
     digitalWrite(cpin[c],HIGH);
   }
 xit:
+  sleeptimer=0;
   //lcd.setPinMode(OUTPUT);//for lcd
   return key;
 }
@@ -163,6 +166,7 @@ void loop(void)
     lcd.print(f64(f64(sleeptimer)/f64(10)).toString());
     //lcd.print(f64(sleeptimer).toString());
   }
+
   if(!stop_req && (sleep_req || sleeptimer>300)){
     lcd.command(LCD_DISPLAYCONTROL|LCD_DISPLAYOFF);
     analogWrite(BACKLIGHT_PIN,0);
@@ -194,8 +198,9 @@ int freeRam () {
 #if defined(ARDUINO)  
 void gosleep()
 {
-  for(int i=0;i<5;i++){
-    digitalWrite(cpin[i],i?HIGH:LOW);
+  digitalWrite(cpin[0],LOW);
+  for(int i=1;i<5;i++){
+    digitalWrite(cpin[i],HIGH);
   }
   set_sleep_mode(SLEEP_MODE_PWR_DOWN);
   cli();
