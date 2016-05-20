@@ -28,7 +28,7 @@ void rpn::key_input(char key,char ch)
 {
   if(altFn&alt_Bri){
     altFn = alt_Norm;
-    bri=((key-'0')%10*16+8);
+    bri=((key-'0')%10*27+12);
     analogWrite(BACKLIGHT_PIN, bri);
     show_stack();
   }

@@ -1,0 +1,30 @@
+#boards.txt
+#No bootloader chip Arduino
+#put it in ~/Arduino/hardware/bare328p16MHz/avr
+#program with avrdude -p m328p -P usb -c jtag3isp -U flash:w:ec.ino.arduino_standard.hex
+##############################################################
+
+atmega328bb.name=Bare ATmega328 on a breadboard (16 MHz crystal clock)
+
+atmega328bb.upload.protocol=arduino
+atmega328bb.upload.maximum_size=32768
+atmega328bb.upload.speed=57600
+
+atmega328bb.bootloader.low_fuses=0xFF
+atmega328bb.bootloader.high_fuses=0xD9
+atmega328bb.bootloader.extended_fuses=0x05
+
+#atmega328bb.bootloader.file=
+atmega328bb.bootloader.unlock_bits=0x3F
+atmega328bb.bootloader.lock_bits=0x0F
+
+atmega328bb.build.mcu=atmega328p
+atmega328bb.build.f_cpu=16000000L
+atmega328bb.build.core=arduino:arduino
+atmega328bb.build.variant=arduino:standard
+atmega328bb.build.board=AVR_ATMEGA328BB16
+
+
+atmega328bb.bootloader.tool=arduino:avrdude
+atmega328bb.upload.tool=arduino:avrdude
+
