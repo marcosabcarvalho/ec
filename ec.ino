@@ -30,6 +30,7 @@ S456*\
 R123-\
 !0.X+";
 
+#if defined(TEST_SMALL) || !defined(ARDUINO)
 static const char keychar[]="\
 abcde\
 fghij\
@@ -37,7 +38,11 @@ fghij\
 .klmn\
 .opqr\
 .stuv\
-.wxyz";
+.wxyz\
+";
+#else
+static const char *keychar=NULL;
+#endif
 
 int16_t sleeptimer=0;
 

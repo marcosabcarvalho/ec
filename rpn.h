@@ -1,7 +1,7 @@
 #include <Math64.h>
 #include "display.h"
 
-#define STACK_DEPTH 6
+#define STACK_DEPTH 4
 #define STACK_TOP (STACK_DEPTH-1)
 #define stackx (stack[stack_index])
 #define stacky (stack[(stack_index+1)%STACK_DEPTH])
