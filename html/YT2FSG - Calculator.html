@@ -1,0 +1,124 @@
+<html><link type="text/css" rel="stylesheet" id="dark-mode-custom-link"><link type="text/css" rel="stylesheet" id="dark-mode-general-link"><style type="text/css" id="dark-mode-custom-style" lang="en"></style><style type="text/css" id="dark-mode-native-style" lang="en"></style><head>
+<title>YT2FSG - Calculator</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1250">
+</head>
+
+<body text="#000000" bgcolor="#FFFFFF">
+
+<h2>Sinclair Scientific Calculator Emulator</h2>
+<br>
+Na web stranici <a href="https://oshpark.com/shared_projects/OSfM0RLN" target="_blank">Sinclair Scientific Calculator Emulator V5 - r6 - RC1</a>  ili na <a href="https://hackaday.io/project/91895-sinclair-scientific-calculator-emulator" target="_blank">Hackaday: Sinclair Scientific Calculator Emulator</a>
+ opisana je izrada sa dokumentacijom ovog kalkulator emulatora sa 
+<a href="https://www.mouser.com/pdfdocs/Gravitech_Arduino_Nano3_0.pdf" target="_blank">
+ARDUINO NANO V3.0</a> modulom.<br> 
+Za napajanje koristi se napon 6V (4 x AAA baterija 1.5V).
+<br><br>
+<img src="YT2FSG%20-%20Calculator_arquivos/calc_s.jpg" width="220" border="0"> 
+<img src="YT2FSG%20-%20Calculator_arquivos/calc_s1.jpg" width="200" border="0"> <img src="YT2FSG%20-%20Calculator_arquivos/calc_s2.jpg" width="200" border="0">
+<img src="YT2FSG%20-%20Calculator_arquivos/arduino-nano.jpg" width="120" border="0"><br>
+<br>
+Izradu PCB štampane ploče možete uraditi preko on-line kompanija:
+<a href="https://easyeda.com/order" target="_blank">EasyEDA</a> - 
+<a href="https://jlcpcb.com/quote" target="_blank">JLCPCB</a> ili 
+<a href="https://www.seeedstudio.io/fusion_pcb.html" target="_blank">Seeed</a>
+<br>
+
+<br>
+Električna šema, Sinclair Scientific Calculator Emulator:<br>
+<a href="https://www.qsl.net/yt2fsg/calculator/calc_s_s.png" target="_blank"><img src="YT2FSG%20-%20Calculator_arquivos/calc_s_s.png" width="800" border="0"></a><br>
+Download File: <a href="https://www.qsl.net/yt2fsg/calculator/calc_s_bom.xls">Lista materijala za Sinclair Scientific Calculator Emulator</a>
+<br><br>
+Download Software za ARDUINO: <a href="https://www.arduino.cc/en/Main/software" target="_blank">Download the Arduino IDE</a>
+<br><br>
+<hr>
+
+<h2><a id="328">RPN Scientific Calculator 328</a></h2>
+<br>
+
+Na web stranici <a href="https://github.com/mmoller2k/ec" target="_blank">Easy Calc 64-bit floating point RPN calculator for arduino</a>
+ dat je software bez električna šeme ovog kalkulator emulatora sa mikrokontrolerom ATmega328P.<br>
+Za napajanje koristi se napon 4.5V (3 x AA baterija 1.5V).
+<br><br>
+<img src="YT2FSG%20-%20Calculator_arquivos/calc_328.jpg" width="250" border="0"> <img src="YT2FSG%20-%20Calculator_arquivos/calc_328_1.png" width="300" border="0"> 
+<img src="YT2FSG%20-%20Calculator_arquivos/calc_328_4.jpg" width="250" border="0">
+<br>
+<br>
+Električna šema, RPN Scientific Calculator 328:<br>
+<a href="https://www.qsl.net/yt2fsg/calculator/calc_328_s.png" target="_blank"><img src="YT2FSG%20-%20Calculator_arquivos/calc_328_s.png" width="800" border="0"></a><br>
+Download File: 
+<a href="https://www.qsl.net/yt2fsg/calculator/calc_328_bom.xls">Lista materijala za RPN Scientific Calculator 328</a>
+<br>
+
+<br>
+<br>
+
+
+Software je dužine 32KB, koristi se mikrokontroler ATmega328P bez bootloadera.<br>
+Programira se pomoću <a href="https://www.fischl.de/usbasp/" target="_blank">USB ASP V2.0</a> (USB ISP) programatora i  
+<a href="https://www.nongnu.org/avrdude/" target="_blank">AVRDUDE - AVR Downloader/UploaDEr</a>
+<br>
+<img src="YT2FSG%20-%20Calculator_arquivos/USBASP.jpg" width="300" border="0"><br>
+<img src="YT2FSG%20-%20Calculator_arquivos/calc_328_3.png" width="440" border="0">
+<img src="YT2FSG%20-%20Calculator_arquivos/calc_328_4.png" width="440" border="0">
+
+<hr>
+
+<h2><a id="DIY">DIY Kit Calculator</a></h2>
+<br>
+
+Na web stranici <a href="http://www.diyleyuan.com/jc/L8Q.html" target="_blank">DIYleyuan: Calculator Installation &amp; Instructions</a>
+ dato je detaljno upustvo za samogradnju ovog kalkulatora za elektroničare entuzijaste.<br>
+<br>
+<img src="YT2FSG%20-%20Calculator_arquivos/calc_d.jpg" width="450" border="0"> 
+<img src="YT2FSG%20-%20Calculator_arquivos/calc_d1.jpg" width="150" border="0"> <img src="YT2FSG%20-%20Calculator_arquivos/calc_d2.jpg" width="150" border="0">
+<br>
+<br>
+Plavi LCD displej i PCB ploča smešteni su u akrilno prozirno kućište.<br>
+Za napajanje koristi se napon 6V (2 x CR2032 baterija 3V).<br>
+<br>
+Funkcije: <br>
+Osnovne računske operacije (+, -, *, /) sa decimalnom tačkom.<br>
+Računa vrednost otpornika na osnovu boja sa 4 ili 5 prstena.<br>
+Računa vrednost otpornika za ograničenje struje LED diode.<br>
+Konverzija broja DEC -&gt; HEX i HEX -&gt; DEC.<br>
+<br>
+
+<hr>
+
+<h4>Link:
+<li><a href="https://en.wikipedia.org/wiki/Sinclair_Scientific" target="_blank">
+Sinclair Scientific</a></li>
+<li><a href="http://files.righto.com/calculator/sinclair_scientific_simulator.html" target="_blank">
+Reversing Sinclair's amazing 1974 calculator hack</a></li>
+<li><a href="https://hackaday.com/?s=Sinclair+Scientific" target="_blank">
+Hackaday: Sinclair Scientific</a></li>
+
+<li><a href="https://oshpark.com/shared_projects/OSfM0RLN" target="_blank">
+Sinclair Scientific Calculator Emulator V5 - r6 - RC1</a></li>
+<li><a href="https://hackaday.io/project/91895-sinclair-scientific-calculator-emulator" target="_blank">Sinclair Scientific Calculator Emulator</a></li>
+<li><a href="https://www.mouser.com/pdfdocs/Gravitech_Arduino_Nano3_0.pdf" target="_blank">
+ARDUINO NANO V3.0</a></li>
+<li><a href="https://github.com/mmoller2k/ec" target="_blank">
+Easy Calc 64-bit floating point RPN calculator for arduino</a></li>
+<li><a href="https://www.nongnu.org/avrdude/" target="_blank">AVRDUDE - AVR Downloader/UploaDEr</a></li>
+<li><a href="https://www.fischl.de/usbasp/" target="_blank">USB ASP V2.0 (USB ISP) programatora</a></li>
+<li><a href="https://www.arduino.cc/en/Main/software" target="_blank">Download the Arduino IDE</a></li>
+<li><a href="http://www.diyleyuan.com/jc/L8Q.html" target="_blank">DIYleyuan: Calculator Installation &amp; Instructions</a></li>
+<br><br>
+
+<hr>
+
+<li><a href="https://en.wikipedia.org/wiki/TI-59_/_TI-58" target="_blank">en.wikipedia.org/wiki/TI-59_/_TI-58</a></li>
+<li><a href="https://en.wikipedia.org/wiki/HP-41C" target="_blank">en.wikipedia.org/wiki/HP-41C</a></li>
+<li><a href="https://en.wikipedia.org/wiki/HP_39/40_series" target="_blank">en.wikipedia.org/wiki/HP_39/40_series</a></li>
+<li><a href="https://www.ti59.com/" target="_blank">www.ti59.com/</a></li>
+<li><a href="https://www.hpmuseum.org/" target="_blank">www.hpmuseum.org</a></li>
+<li><a href="https://www.hpmuseum.org/prog/hp41prog.htm" target="_blank">www.hpmuseum.org/prog/hp41prog.htm</a></li>
+<li><a href="https://www.hpcalc.org/" target="_blank">www.hpcalc.org</a></li>
+<li><a href="https://www.hpcalc.org/hp39/" target="_blank">www.hpcalc.org/hp39/</a></li>
+
+
+
+<script defer="defer" src="YT2FSG%20-%20Calculator_arquivos/beacon.js" data-cf-beacon="{&quot;rayId&quot;:&quot;6883ac450ed0f73c&quot;,&quot;version&quot;:&quot;2021.8.1&quot;,&quot;r&quot;:1,&quot;token&quot;:&quot;a1f63c104aef4b4fb3a6c7ece2fbb0d4&quot;,&quot;si&quot;:10}"></script>
+
+</h4></body><div id="night-mask" style="position: fixed;top: 0;left: 0;width: 100%;height: 100%;z-index: 2147483647;pointer-events: none;mix-blend-mode: multiply;transition: opacity 0.1s ease 0s;opacity:0.18;display:none;background: #ff8100;"></div></html>

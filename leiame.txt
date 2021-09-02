@@ -1,0 +1,2 @@
+Instalar a biblioteca float64.zip e math64.zip baixado do github https://github.com/mmoller2k;
+Criar a pasta "avr" e copiar sleep.h Baixado de https://github.com/vancegroup-mirrors/avr-libc/blob/master/avr-libc/include/avr/sleep.h;
